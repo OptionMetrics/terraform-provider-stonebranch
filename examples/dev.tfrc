@@ -1,0 +1,15 @@
+# Development override file for local testing
+#
+# Usage:
+#   export TF_CLI_CONFIG_FILE=/path/to/terraform-provider-stonebranch/examples/dev.tfrc
+#   terraform plan
+#
+# Note: Update the path below to match your local build location
+
+provider_installation {
+  dev_overrides {
+    # Change this path to where your terraform-provider-stonebranch binary is located
+    "stonebranch/stonebranch" = "/Users/dhait/go/bin/terraform-provider-stonebranch"
+  }
+  direct {}
+}

@@ -1,0 +1,23 @@
+# Binaries
+terraform-provider-stonebranch
+*.exe
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Test coverage
+coverage.out
+
+.env
