@@ -26,6 +26,8 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_task_email` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_trigger_cron` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_business_service` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_trigger_file_monitor` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_task_file_monitor` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
@@ -91,7 +93,7 @@ Resources for building complex workflows and orchestration patterns.
 |----------|-------------|----------|--------|
 | `stonebranch_trigger_time` | Time-based scheduling | P0 | ✅ Complete |
 | `stonebranch_trigger_cron` | CRON expression triggers | P0 | ✅ Complete |
-| `stonebranch_trigger_file_monitor` | File arrival triggers | P0 | 🔲 Not Started |
+| `stonebranch_trigger_file_monitor` | File arrival triggers | P0 | ✅ Complete |
 | `stonebranch_trigger_task_monitor` | Task completion triggers | P1 | 🔲 Not Started |
 | `stonebranch_trigger_manual` | Manual/on-demand triggers | P1 | 🔲 Not Started |
 | `stonebranch_trigger_temporary` | One-time triggers | P2 | 🔲 Not Started |
@@ -397,6 +399,8 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_task_email` | ✅ Acceptance tests |
 | `stonebranch_trigger_cron` | ✅ Acceptance tests |
 | `stonebranch_business_service` | ✅ Acceptance tests |
+| `stonebranch_trigger_file_monitor` | ✅ Acceptance tests |
+| `stonebranch_task_file_monitor` | ✅ Acceptance tests |
 
 ---
 
@@ -460,12 +464,12 @@ docs/
 
 | Category | Count | Implemented |
 |----------|-------|-------------|
-| Task Types | 20 | 7 |
-| Trigger Types | 12 | 2 |
+| Task Types | 20 | 8 |
+| Trigger Types | 12 | 3 |
 | Connection Types | 5 | 2 |
 | Supporting Resources | 15 | 7 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **18** |
+| **Total** | **63** | **20** |
 
 ### Priority Breakdown
 

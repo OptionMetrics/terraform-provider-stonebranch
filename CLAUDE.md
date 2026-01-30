@@ -342,6 +342,55 @@ Implemented `stonebranch_business_service` resource in `internal/provider/resour
 
 4. **Usage**: Business services are used to group and organize resources. Other resources reference business services through the `opswise_groups` attribute.
 
+### Step 2n: File Monitor Trigger Resource (COMPLETE)
+
+Implemented `stonebranch_trigger_file_monitor` resource in `internal/provider/resources/trigger_filemonitor.go`:
+
+**Note**: The file is named `trigger_filemonitor.go` (not `trigger_file_monitor.go`) because Go interprets `_file_` suffix patterns as potential platform-specific build constraints.
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/trigger` (type = "triggerFm")
+   - Read via `GET /resources/trigger?triggername=X`
+   - Update via `PUT /resources/trigger`
+   - Delete via `DELETE /resources/trigger?triggerid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `description`, `enabled` (computed, defaults to false)
+   - Tasks: `tasks` (required, list of task names to trigger)
+   - File monitor: `task_monitor` (required, name of file monitor task)
+   - Time restrictions: `time_zone`, `calendar`, `restricted_times`, `enabled_start`, `enabled_end`
+   - Business services: `opswise_groups`
+
+3. **Import support** via trigger name
+
+4. **Note**: The `task_monitor` field references a file monitor task that detects file events. Triggers are created disabled by default.
+
+### Step 2o: File Monitor Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_file_monitor` resource in `internal/provider/resources/task_file_monitor.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskFileMonitor")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Agent: `agent`, `agent_cluster`, `agent_var`, `agent_cluster_var`
+   - File monitor: `file_name` (required), `use_regex`, `stable_seconds`, `fm_type`, `recursive`
+   - File filters: `file_owner`, `file_group`, `scan_text`, `scan_forward`, `max_files`
+   - Trigger options: `trigger_on_exist`, `trigger_on_create`, `min_file_size`, `min_file_scale`
+   - Credentials: `credentials`, `credentials_var`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+4. **Usage**: File monitor tasks are used by file monitor triggers (`task_monitor` field) to detect file events.
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -352,6 +401,7 @@ Each task type should be a separate resource:
 - `stonebranch_task_sql` - SQL/Database tasks (COMPLETE)
 - `stonebranch_task_workflow` - Workflow tasks (COMPLETE)
 - `stonebranch_task_email` - Email tasks (COMPLETE)
+- `stonebranch_task_file_monitor` - File monitor tasks (COMPLETE)
 - etc.
 
 ### Step 4: Add Other Resources
@@ -492,6 +542,10 @@ terraform -chdir=examples/provider plan
 | Workflow Edge tests | `internal/provider/resources/workflow_edge_test.go` |
 | Business Service resource | `internal/provider/resources/business_service.go` |
 | Business Service tests | `internal/provider/resources/business_service_test.go` |
+| File Monitor Trigger resource | `internal/provider/resources/trigger_filemonitor.go` |
+| File Monitor Trigger tests | `internal/provider/resources/trigger_filemonitor_test.go` |
+| File Monitor Task resource | `internal/provider/resources/task_file_monitor.go` |
+| File Monitor Task tests | `internal/provider/resources/task_file_monitor_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -546,7 +600,11 @@ terraform-provider-stonebranch/
 │   │       ├── workflow_edge.go
 │   │       ├── workflow_edge_test.go
 │   │       ├── business_service.go
-│   │       └── business_service_test.go
+│   │       ├── business_service_test.go
+│   │       ├── trigger_filemonitor.go
+│   │       ├── trigger_filemonitor_test.go
+│   │       ├── task_file_monitor.go
+│   │       └── task_file_monitor_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
