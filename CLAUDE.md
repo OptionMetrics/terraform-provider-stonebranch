@@ -96,6 +96,29 @@ Implemented `stonebranch_script` resource in `internal/provider/resource_script.
 
 4. **Integration with tasks**: Unix tasks can reference scripts using `command_or_script = "Script"` and `script = stonebranch_script.my_script.name`
 
+### Step 2c: Time Trigger Resource (COMPLETE)
+
+Implemented `stonebranch_trigger_time` resource in `internal/provider/resource_trigger_time.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/trigger` (type = "triggerTime")
+   - Read via `GET /resources/trigger?triggername=X`
+   - Update via `PUT /resources/trigger`
+   - Delete via `DELETE /resources/trigger?triggerid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `description`, `enabled` (computed, defaults to false)
+   - Tasks: `tasks` (required, list of task names to trigger)
+   - Time: `time` (required), `time_zone`, `time_style`, `time_interval`, `time_interval_units`
+   - Day: `day_style`, `day_interval`, `sunday`-`saturday` flags
+   - Calendar: `calendar`
+   - Business services: `opswise_groups`
+
+3. **Import support** via trigger name
+
+4. **Note**: Triggers are created disabled by default. Use the `enabled` attribute to control this.
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -211,6 +234,8 @@ terraform -chdir=examples/provider plan
 | Task Unix tests | `internal/provider/resource_task_unix_test.go` |
 | Script resource | `internal/provider/resource_script.go` |
 | Script tests | `internal/provider/resource_script_test.go` |
+| Time Trigger resource | `internal/provider/resource_trigger_time.go` |
+| Time Trigger tests | `internal/provider/resource_trigger_time_test.go` |
 | Test config | `internal/provider/provider_test.go` |
 | Data sources | `internal/provider/datasource_*.go` (to be created) |
 | API spec | `openapi.yaml` |

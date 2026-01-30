@@ -72,3 +72,39 @@ resource "stonebranch_task_unix" "script_task" {
 #   retry_maximum  = 3
 #   retry_interval = 300  # 5 minutes
 # }
+
+# Example: Time trigger that runs a task daily at 9:00 AM
+resource "stonebranch_trigger_time" "daily_backup" {
+  name        = "terraform-daily-backup-trigger"
+  description = "Triggers the backup task every day at 9:00 AM"
+  enabled     = false  # Set to true to activate
+
+  # Reference the task(s) to run
+  tasks = [stonebranch_task_unix.script_task.name]
+
+  # Schedule configuration
+  time      = "09:00"
+  time_zone = "America/New_York"
+}
+
+# Example: File Transfer task for SFTP download
+resource "stonebranch_task_file_transfer" "download_report" {
+  name    = "terraform-download-report"
+  summary = "Download daily report from SFTP server"
+
+  agent = var.agent_name
+
+  # Transfer settings
+  transfer_direction = "Download"
+  server_type        = "SFTP"
+
+  # Remote server configuration
+  remote_server   = "sftp.example.com"
+  remote_filename = "/reports/daily_report.csv"
+
+  # Local destination
+  local_filename = "/data/reports/daily_report.csv"
+
+  # Credentials (reference a credentials resource by name)
+  # remote_credentials = "sftp-credentials"
+}
