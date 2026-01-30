@@ -123,6 +123,7 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 		resources.NewTaskWindowsResource,
 		resources.NewTaskFileTransferResource,
 		resources.NewTaskSQLResource,
+		resources.NewTaskWorkflowResource,
 		resources.NewScriptResource,
 		resources.NewTriggerTimeResource,
 		resources.NewCredentialResource,

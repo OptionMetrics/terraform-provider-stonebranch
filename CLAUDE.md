@@ -276,6 +276,8 @@ terraform -chdir=examples/provider plan
 | Database Connection tests | `internal/provider/resources/database_connection_test.go` |
 | Task SQL resource | `internal/provider/resources/task_sql.go` |
 | Task SQL tests | `internal/provider/resources/task_sql_test.go` |
+| Task Workflow resource | `internal/provider/resources/task_workflow.go` |
+| Task Workflow tests | `internal/provider/resources/task_workflow_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -316,7 +318,9 @@ terraform-provider-stonebranch/
 │   │       ├── database_connection.go
 │   │       ├── database_connection_test.go
 │   │       ├── task_sql.go
-│   │       └── task_sql_test.go
+│   │       ├── task_sql_test.go
+│   │       ├── task_workflow.go
+│   │       └── task_workflow_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/

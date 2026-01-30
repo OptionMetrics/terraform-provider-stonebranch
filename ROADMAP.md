@@ -19,6 +19,7 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_variable` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_database_connection` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_sql` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_task_workflow` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
@@ -74,7 +75,7 @@ Resources for building complex workflows and orchestration patterns.
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
-| `stonebranch_task_workflow` | Workflow/DAG definitions | P0 | 🔲 Not Started |
+| `stonebranch_task_workflow` | Workflow/DAG definitions | P0 | ✅ Complete |
 | `stonebranch_workflow_vertex` | Workflow task nodes | P1 | 🔲 Not Started |
 | `stonebranch_workflow_edge` | Workflow task connections | P1 | 🔲 Not Started |
 
@@ -100,7 +101,7 @@ Resources for building complex workflows and orchestration patterns.
 | `stonebranch_virtual_resource` | Concurrency control | P1 | 🔲 Not Started |
 
 ### Deliverables
-- [ ] `stonebranch_task_workflow` resource with vertex/edge management
+- [x] `stonebranch_task_workflow` resource (vertices/edges managed via UI)
 - [ ] All trigger type resources
 - [ ] `stonebranch_virtual_resource` for concurrency control
 - [ ] Workflow composition examples
@@ -381,6 +382,7 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_variable` | ✅ Acceptance tests |
 | `stonebranch_database_connection` | ✅ Acceptance tests |
 | `stonebranch_task_sql` | ✅ Acceptance tests |
+| `stonebranch_task_workflow` | ✅ Acceptance tests |
 
 ---
 
@@ -444,12 +446,12 @@ docs/
 
 | Category | Count | Implemented |
 |----------|-------|-------------|
-| Task Types | 20 | 4 |
+| Task Types | 20 | 5 |
 | Trigger Types | 12 | 1 |
 | Connection Types | 5 | 0 |
 | Supporting Resources | 15 | 4 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **9** |
+| **Total** | **63** | **10** |
 
 ### Priority Breakdown
 
