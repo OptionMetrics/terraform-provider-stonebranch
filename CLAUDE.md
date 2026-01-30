@@ -324,6 +324,24 @@ Implemented `stonebranch_trigger_cron` resource in `internal/provider/resources/
 
 4. **Note**: Triggers are created disabled by default. Use the `enabled` attribute to control this.
 
+### Step 2m: Business Service Resource (COMPLETE)
+
+Implemented `stonebranch_business_service` resource in `internal/provider/resources/business_service.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/businessservice`
+   - Read via `GET /resources/businessservice?busservicename=X`
+   - Update via `PUT /resources/businessservice`
+   - Delete via `DELETE /resources/businessservice?busserviceid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Content: `description`
+
+3. **Import support** via business service name
+
+4. **Usage**: Business services are used to group and organize resources. Other resources reference business services through the `opswise_groups` attribute.
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -343,8 +361,8 @@ Each task type should be a separate resource:
 - `stonebranch_email_connection` - Email connections (COMPLETE)
 - `stonebranch_workflow_vertex` - Tasks within workflows (COMPLETE)
 - `stonebranch_workflow_edge` - Dependencies between workflow tasks (COMPLETE)
+- `stonebranch_business_service` - Business services (COMPLETE)
 - Additional triggers/schedules
-- Business services
 - Agent clusters
 
 ### Step 5: Data Sources
@@ -472,6 +490,8 @@ terraform -chdir=examples/provider plan
 | Workflow Vertex tests | `internal/provider/resources/workflow_vertex_test.go` |
 | Workflow Edge resource | `internal/provider/resources/workflow_edge.go` |
 | Workflow Edge tests | `internal/provider/resources/workflow_edge_test.go` |
+| Business Service resource | `internal/provider/resources/business_service.go` |
+| Business Service tests | `internal/provider/resources/business_service_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -524,7 +544,9 @@ terraform-provider-stonebranch/
 │   │       ├── workflow_vertex.go
 │   │       ├── workflow_vertex_test.go
 │   │       ├── workflow_edge.go
-│   │       └── workflow_edge_test.go
+│   │       ├── workflow_edge_test.go
+│   │       ├── business_service.go
+│   │       └── business_service_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/

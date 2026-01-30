@@ -25,6 +25,7 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_email_connection` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_email` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_trigger_cron` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_business_service` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
@@ -169,7 +170,7 @@ Resources for organizing and categorizing other resources.
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
-| `stonebranch_business_service` | Business service groups | P0 | 🔲 Not Started |
+| `stonebranch_business_service` | Business service groups | P0 | ✅ Complete |
 
 ### Email Templates
 
@@ -178,9 +179,9 @@ Resources for organizing and categorizing other resources.
 | `stonebranch_email_template` | Reusable email templates | P1 | 🔲 Not Started |
 
 ### Deliverables
-- [ ] `stonebranch_business_service` resource with full CRUD
+- [x] `stonebranch_business_service` resource with full CRUD
 - [ ] `stonebranch_email_template` resource with full CRUD
-- [ ] Acceptance tests for all resources
+- [x] Acceptance tests for business service resource
 
 ---
 
@@ -395,6 +396,7 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_email_connection` | ✅ Acceptance tests |
 | `stonebranch_task_email` | ✅ Acceptance tests |
 | `stonebranch_trigger_cron` | ✅ Acceptance tests |
+| `stonebranch_business_service` | ✅ Acceptance tests |
 
 ---
 
@@ -461,9 +463,9 @@ docs/
 | Task Types | 20 | 7 |
 | Trigger Types | 12 | 2 |
 | Connection Types | 5 | 2 |
-| Supporting Resources | 15 | 6 |
+| Supporting Resources | 15 | 7 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **15** |
+| **Total** | **63** | **18** |
 
 ### Priority Breakdown
 
@@ -547,7 +549,7 @@ docs/
 ### v0.5.0 - Infrastructure
 - [ ] Agent cluster resource
 - [ ] Agent data sources
-- [ ] Business service resource
+- [x] Business service resource
 
 ### v0.6.0 - Data Sources
 - [ ] Task data sources

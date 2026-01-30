@@ -134,6 +134,7 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 		resources.NewEmailConnectionResource,
 		resources.NewWorkflowVertexResource,
 		resources.NewWorkflowEdgeResource,
+		resources.NewBusinessServiceResource,
 	}
 }
 

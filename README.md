@@ -103,12 +103,31 @@ You can provide the token via:
 
 ## Resources
 
+### Tasks
 - [stonebranch_task_unix](#stonebranch_task_unix) - Unix/Linux command tasks
 - [stonebranch_task_windows](#stonebranch_task_windows) - Windows command tasks
 - [stonebranch_task_file_transfer](#stonebranch_task_file_transfer) - File transfer tasks
-- [stonebranch_script](#stonebranch_script) - Reusable scripts
+- [stonebranch_task_sql](#stonebranch_task_sql) - SQL database tasks
+- [stonebranch_task_email](#stonebranch_task_email) - Email notification tasks
+- [stonebranch_task_workflow](#stonebranch_task_workflow) - Workflow orchestration tasks
+
+### Workflows
+- [stonebranch_workflow_vertex](#stonebranch_workflow_vertex) - Tasks within workflows
+- [stonebranch_workflow_edge](#stonebranch_workflow_edge) - Task dependencies in workflows
+
+### Triggers
 - [stonebranch_trigger_time](#stonebranch_trigger_time) - Time-based triggers
+- [stonebranch_trigger_cron](#stonebranch_trigger_cron) - Cron expression triggers
+
+### Connections
+- [stonebranch_database_connection](#stonebranch_database_connection) - Database connections
+- [stonebranch_email_connection](#stonebranch_email_connection) - Email server connections
+
+### Supporting Resources
+- [stonebranch_script](#stonebranch_script) - Reusable scripts
 - [stonebranch_credential](#stonebranch_credential) - Authentication credentials
+- [stonebranch_variable](#stonebranch_variable) - Global variables
+- [stonebranch_business_service](#stonebranch_business_service) - Business service groups
 
 ### stonebranch_task_unix
 
@@ -304,6 +323,62 @@ resource "stonebranch_credential" "service_account" {
   runtime_user     = "svc_user"
   runtime_password = var.service_password
 }
+```
+
+### stonebranch_variable
+
+Manages global variables that can be referenced by tasks and triggers.
+
+#### Example Usage
+
+```hcl
+resource "stonebranch_variable" "environment" {
+  name        = "APP_ENVIRONMENT"
+  value       = "production"
+  description = "Current application environment"
+}
+```
+
+### stonebranch_business_service
+
+Manages business service groups for organizing resources.
+
+#### Example Usage
+
+```hcl
+resource "stonebranch_business_service" "production" {
+  name        = "Production Services"
+  description = "Business service for production workloads"
+}
+
+# Reference in other resources via opswise_groups
+resource "stonebranch_variable" "app_env" {
+  name           = "APP_ENVIRONMENT"
+  value          = "production"
+  opswise_groups = [stonebranch_business_service.production.name]
+}
+```
+
+#### Argument Reference
+
+| Attribute | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Unique name of the business service |
+| `description` | string | No | Description of the business service |
+
+#### Attribute Reference
+
+| Attribute | Description |
+|-----------|-------------|
+| `sys_id` | System ID assigned by StoneBranch |
+| `version` | Version number for optimistic locking |
+
+#### Import
+
+Business services can be imported using the name:
+
+```bash
+terraform import stonebranch_business_service.example "service-name"
 ```
 
 ## Development
