@@ -272,6 +272,10 @@ terraform -chdir=examples/provider plan
 | Credential tests | `internal/provider/resources/credential_test.go` |
 | Variable resource | `internal/provider/resources/variable.go` |
 | Variable tests | `internal/provider/resources/variable_test.go` |
+| Database Connection resource | `internal/provider/resources/database_connection.go` |
+| Database Connection tests | `internal/provider/resources/database_connection_test.go` |
+| Task SQL resource | `internal/provider/resources/task_sql.go` |
+| Task SQL tests | `internal/provider/resources/task_sql_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -308,7 +312,11 @@ terraform-provider-stonebranch/
 │   │       ├── credential.go
 │   │       ├── credential_test.go
 │   │       ├── variable.go
-│   │       └── variable_test.go
+│   │       ├── variable_test.go
+│   │       ├── database_connection.go
+│   │       ├── database_connection_test.go
+│   │       ├── task_sql.go
+│   │       └── task_sql_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
