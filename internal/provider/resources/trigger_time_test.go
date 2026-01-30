@@ -1,4 +1,4 @@
-package provider
+package resources_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+
+	sbacctest "terraform-provider-stonebranch/internal/acctest"
 )
 
 func TestAccTriggerTimeResource_basic(t *testing.T) {
@@ -14,8 +16,8 @@ func TestAccTriggerTimeResource_basic(t *testing.T) {
 	resourceName := "stonebranch_trigger_time.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read (triggers are created disabled by default)
 			{
@@ -52,8 +54,8 @@ func TestAccTriggerTimeResource_disabled(t *testing.T) {
 	resourceName := "stonebranch_trigger_time.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTriggerTimeConfig_disabled(taskName, triggerName),
@@ -72,8 +74,8 @@ func TestAccTriggerTimeResource_withTime(t *testing.T) {
 	resourceName := "stonebranch_trigger_time.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTriggerTimeConfig_withTime(taskName, triggerName, "09:00"),
@@ -89,7 +91,7 @@ func TestAccTriggerTimeResource_withTime(t *testing.T) {
 // Test configuration helpers
 
 func testAccTriggerTimeConfig_basic(taskName, triggerName string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo 'Triggered task'"
@@ -106,7 +108,7 @@ resource "stonebranch_trigger_time" "test" {
 }
 
 func testAccTriggerTimeConfig_updated(taskName, triggerName string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo 'Triggered task'"
@@ -124,7 +126,7 @@ resource "stonebranch_trigger_time" "test" {
 }
 
 func testAccTriggerTimeConfig_disabled(taskName, triggerName string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo 'Triggered task'"
@@ -142,7 +144,7 @@ resource "stonebranch_trigger_time" "test" {
 }
 
 func testAccTriggerTimeConfig_withTime(taskName, triggerName, time string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo 'Triggered task'"

@@ -1,4 +1,4 @@
-package provider
+package resources_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+
+	sbacctest "terraform-provider-stonebranch/internal/acctest"
 )
 
 func TestAccTaskUnixResource_basic(t *testing.T) {
@@ -13,8 +15,8 @@ func TestAccTaskUnixResource_basic(t *testing.T) {
 	resourceName := "stonebranch_task_unix.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read
 			{
@@ -54,8 +56,8 @@ func TestAccTaskUnixResource_withScript(t *testing.T) {
 	taskResourceName := "stonebranch_task_unix.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTaskUnixConfig_withScript(taskName, scriptName),
@@ -74,8 +76,8 @@ func TestAccTaskUnixResource_withSummary(t *testing.T) {
 	resourceName := "stonebranch_task_unix.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTaskUnixConfig_withSummary(rName, "Initial summary"),
@@ -97,7 +99,7 @@ func TestAccTaskUnixResource_withSummary(t *testing.T) {
 // Test configuration helpers
 
 func testAccTaskUnixConfig_basic(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo hello"
@@ -108,7 +110,7 @@ resource "stonebranch_task_unix" "test" {
 }
 
 func testAccTaskUnixConfig_updated(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo updated"
@@ -120,7 +122,7 @@ resource "stonebranch_task_unix" "test" {
 }
 
 func testAccTaskUnixConfig_withScript(taskName, scriptName string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_script" "test" {
   name    = %[2]q
   content = "echo 'Hello from script'"
@@ -137,7 +139,7 @@ resource "stonebranch_task_unix" "test" {
 }
 
 func testAccTaskUnixConfig_withSummary(name, summary string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_unix" "test" {
   name       = %[1]q
   command    = "echo hello"

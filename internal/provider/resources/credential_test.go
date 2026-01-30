@@ -1,4 +1,4 @@
-package provider
+package resources_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+
+	sbacctest "terraform-provider-stonebranch/internal/acctest"
 )
 
 func TestAccCredentialResource_basic(t *testing.T) {
@@ -13,8 +15,8 @@ func TestAccCredentialResource_basic(t *testing.T) {
 	resourceName := "stonebranch_credential.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read
 			{
@@ -54,8 +56,8 @@ func TestAccCredentialResource_withDescription(t *testing.T) {
 	resourceName := "stonebranch_credential.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCredentialConfig_withDescription(rName, "Initial description"),
@@ -77,7 +79,7 @@ func TestAccCredentialResource_withDescription(t *testing.T) {
 // Test configuration helpers
 
 func testAccCredentialConfig_basic(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_credential" "test" {
   name             = %[1]q
   runtime_user     = "testuser"
@@ -87,7 +89,7 @@ resource "stonebranch_credential" "test" {
 }
 
 func testAccCredentialConfig_updated(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_credential" "test" {
   name             = %[1]q
   description      = "Updated credential"
@@ -98,7 +100,7 @@ resource "stonebranch_credential" "test" {
 }
 
 func testAccCredentialConfig_withDescription(name, description string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_credential" "test" {
   name             = %[1]q
   description      = %[2]q

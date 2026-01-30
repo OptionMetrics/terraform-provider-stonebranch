@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"terraform-provider-stonebranch/internal/client"
+	"terraform-provider-stonebranch/internal/provider/resources"
 )
 
 // Ensure StonebranchProvider satisfies various provider interfaces.
@@ -118,11 +119,12 @@ func (p *StonebranchProvider) Configure(ctx context.Context, req provider.Config
 
 func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewTaskUnixResource,
-		NewTaskFileTransferResource,
-		NewScriptResource,
-		NewTriggerTimeResource,
-		NewCredentialResource,
+		resources.NewTaskUnixResource,
+		resources.NewTaskWindowsResource,
+		resources.NewTaskFileTransferResource,
+		resources.NewScriptResource,
+		resources.NewTriggerTimeResource,
+		resources.NewCredentialResource,
 	}
 }
 

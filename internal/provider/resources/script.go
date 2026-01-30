@@ -1,4 +1,4 @@
-package provider
+package resources
 
 import (
 	"context"
@@ -331,7 +331,7 @@ func (r *ScriptResource) fromAPIModel(ctx context.Context, apiModel *ScriptAPIMo
 	data.Content = types.StringValue(apiModel.Content)
 
 	// Optional fields
-	data.Description = stringValueOrNull(apiModel.Description)
+	data.Description = StringValueOrNull(apiModel.Description)
 	data.ResolveVariables = types.BoolValue(apiModel.ResolveVariables)
 
 	// Handle opswise_groups

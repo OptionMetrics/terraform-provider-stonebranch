@@ -11,6 +11,7 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | Resource | Status | Tests | Docs |
 |----------|--------|-------|------|
 | `stonebranch_task_unix` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_task_windows` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_script` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_trigger_time` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_file_transfer` | ✅ Complete | ✅ | ❌ |
@@ -31,7 +32,7 @@ These are the most commonly used task types that form the foundation of most aut
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
 | `stonebranch_task_unix` | Unix/Linux command execution | P0 | ✅ Complete |
-| `stonebranch_task_windows` | Windows command execution | P0 | 🔲 Not Started |
+| `stonebranch_task_windows` | Windows command execution | P0 | ✅ Complete |
 | `stonebranch_task_sql` | SQL query execution | P0 | 🔲 Not Started |
 | `stonebranch_task_stored_procedure` | Stored procedure execution | P1 | 🔲 Not Started |
 | `stonebranch_task_file_transfer` | File transfer (FTP/SFTP) | P0 | ✅ Complete |
@@ -49,7 +50,7 @@ These are the most commonly used task types that form the foundation of most aut
 | `stonebranch_email_connection` | Email server connections | P1 | 🔲 Not Started |
 
 ### Deliverables
-- [ ] `stonebranch_task_windows` resource with full CRUD
+- [x] `stonebranch_task_windows` resource with full CRUD
 - [ ] `stonebranch_task_sql` resource with full CRUD
 - [ ] `stonebranch_task_stored_procedure` resource with full CRUD
 - [ ] `stonebranch_task_email` resource with full CRUD
@@ -341,7 +342,7 @@ Each resource/data source should have:
 - [ ] Model conversion tests (API ↔ Terraform)
 - [ ] Nil/empty value handling tests
 
-Location: `internal/provider/*_test.go` (non-acceptance tests)
+Location: `internal/provider/resources/*_test.go` (non-acceptance tests)
 
 ### Acceptance Tests
 
@@ -352,7 +353,9 @@ Each resource/data source should have:
 - [ ] Delete test (handled by test framework cleanup)
 - [ ] Edge cases (optional fields, computed fields)
 
-Location: `internal/provider/*_test.go` (with `TestAcc` prefix)
+Location: `internal/provider/resources/*_test.go` (with `TestAcc` prefix)
+
+Test helpers: `internal/acctest/acctest.go`
 
 ### Test Infrastructure
 
@@ -367,6 +370,7 @@ Location: `internal/provider/*_test.go` (with `TestAcc` prefix)
 |-----------|----------|
 | API Client | ✅ Unit tests |
 | `stonebranch_task_unix` | ✅ Acceptance tests |
+| `stonebranch_task_windows` | ✅ Acceptance tests |
 | `stonebranch_script` | ✅ Acceptance tests |
 | `stonebranch_trigger_time` | ✅ Acceptance tests |
 | `stonebranch_task_file_transfer` | ✅ Acceptance tests |
@@ -434,12 +438,12 @@ docs/
 
 | Category | Count | Implemented |
 |----------|-------|-------------|
-| Task Types | 20 | 2 |
+| Task Types | 20 | 3 |
 | Trigger Types | 12 | 1 |
 | Connection Types | 5 | 0 |
 | Supporting Resources | 15 | 2 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **5** |
+| **Total** | **63** | **6** |
 
 ### Priority Breakdown
 
@@ -456,29 +460,32 @@ docs/
 
 ### Adding a New Resource
 
-1. Create resource file: `internal/provider/resource_{name}.go`
+1. Create resource file: `internal/provider/resources/{name}.go`
+   - **Important**: Avoid `_windows.go`, `_linux.go`, `_darwin.go` suffixes as Go treats these as platform-specific build constraints. Use `taskwindows.go` instead of `task_windows.go`.
 2. Define schema with all attributes
 3. Implement CRUD operations
-4. Register in `provider.go` Resources() method
-5. Create acceptance tests: `internal/provider/resource_{name}_test.go`
+4. Register in `provider.go` Resources() method (import from `resources` package)
+5. Create acceptance tests: `internal/provider/resources/{name}_test.go`
+   - Use `package resources_test` (external test package)
+   - Import test helpers from `internal/acctest`
 6. Add example: `examples/resources/{name}/main.tf`
 7. Update this roadmap
 
 ### Adding a New Data Source
 
-1. Create data source file: `internal/provider/datasource_{name}.go`
+1. Create data source file: `internal/provider/data_sources/{name}.go`
 2. Define schema (read-only attributes)
 3. Implement Read operation
 4. Register in `provider.go` DataSources() method
-5. Create acceptance tests
+5. Create acceptance tests in `internal/provider/data_sources/{name}_test.go`
 6. Add example
 7. Update this roadmap
 
 ### Code Style
 
-- Follow existing patterns in `resource_task_unix.go`
+- Follow existing patterns in `internal/provider/resources/task_unix.go`
 - Use meaningful attribute descriptions
-- Handle nil values gracefully
+- Handle nil values gracefully (use `helpers.StringValueOrNull()`)
 - Include proper error diagnostics
 
 ---
@@ -496,7 +503,7 @@ docs/
 - [ ] Basic documentation
 
 ### v0.2.0 - Core Tasks
-- [ ] Windows task resource
+- [x] Windows task resource
 - [ ] SQL task resource
 - [ ] Email task resource
 - [ ] Web service task resource

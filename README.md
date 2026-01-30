@@ -103,6 +103,13 @@ You can provide the token via:
 
 ## Resources
 
+- [stonebranch_task_unix](#stonebranch_task_unix) - Unix/Linux command tasks
+- [stonebranch_task_windows](#stonebranch_task_windows) - Windows command tasks
+- [stonebranch_task_file_transfer](#stonebranch_task_file_transfer) - File transfer tasks
+- [stonebranch_script](#stonebranch_script) - Reusable scripts
+- [stonebranch_trigger_time](#stonebranch_trigger_time) - Time-based triggers
+- [stonebranch_credential](#stonebranch_credential) - Authentication credentials
+
 ### stonebranch_task_unix
 
 Manages a StoneBranch Unix/Linux task.
@@ -181,25 +188,154 @@ Tasks can be imported using the task name:
 terraform import stonebranch_task_unix.example "task-name"
 ```
 
+### stonebranch_task_windows
+
+Manages a StoneBranch Windows task.
+
+#### Example Usage
+
+```hcl
+# Simple Windows task with a command
+resource "stonebranch_task_windows" "hello" {
+  name    = "terraform-windows-hello"
+  summary = "A simple Windows task managed by Terraform"
+  command = "echo Hello from Terraform!"
+  agent   = "my-windows-agent"
+}
+
+# Windows task with elevated privileges
+resource "stonebranch_task_windows" "admin_task" {
+  name         = "terraform-admin-task"
+  command      = "net user"
+  agent        = "my-windows-agent"
+  elevate_user = true
+}
+```
+
+#### Argument Reference
+
+| Attribute | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Unique name of the task |
+| `summary` | string | No | Description of the task |
+| `agent` | string | No* | Agent to run the task on |
+| `agent_cluster` | string | No* | Agent cluster to run the task on |
+| `command` | string | No | Command to execute |
+| `command_or_script` | string | No | `Command` or `Script` |
+| `script` | string | No | Script resource name (when `command_or_script = "Script"`) |
+| `runtime_dir` | string | No | Working directory |
+| `parameters` | string | No | Parameters to pass |
+| `credentials` | string | No | Credentials to use |
+| `exit_codes` | string | No | Success exit codes (e.g., `"0"` or `"0,1,2"`) |
+| `exit_code_processing` | string | No | `Success Exitcode Range` or `Failure Exitcode Range` |
+| `retry_maximum` | int | No | Max retry attempts |
+| `retry_interval` | int | No | Seconds between retries |
+| `retry_indefinitely` | bool | No | Retry forever |
+| `elevate_user` | bool | No | Run with administrator privileges |
+| `desktop_interact` | bool | No | Allow desktop interaction |
+| `create_console` | bool | No | Create console window |
+| `opswise_groups` | list | No | Business service names |
+
+*One of `agent` or `agent_cluster` is required by the API.
+
+#### Attribute Reference
+
+| Attribute | Description |
+|-----------|-------------|
+| `sys_id` | System ID assigned by StoneBranch |
+| `version` | Version number for optimistic locking |
+
+#### Import
+
+Tasks can be imported using the task name:
+
+```bash
+terraform import stonebranch_task_windows.example "task-name"
+```
+
+### stonebranch_script
+
+Manages a reusable script resource that can be referenced by tasks.
+
+#### Example Usage
+
+```hcl
+resource "stonebranch_script" "backup" {
+  name    = "backup-script"
+  content = <<-EOT
+    #!/bin/bash
+    tar -czf /backup/data.tar.gz /data
+  EOT
+}
+
+# Reference the script in a task
+resource "stonebranch_task_unix" "backup_job" {
+  name              = "backup-job"
+  command_or_script = "Script"
+  script            = stonebranch_script.backup.name
+  agent             = "my-linux-agent"
+}
+```
+
+### stonebranch_trigger_time
+
+Manages a time-based trigger for scheduling task execution.
+
+#### Example Usage
+
+```hcl
+resource "stonebranch_trigger_time" "daily" {
+  name      = "daily-trigger"
+  tasks     = [stonebranch_task_unix.my_task.name]
+  time      = "08:00"
+  time_zone = "America/New_York"
+}
+```
+
+### stonebranch_credential
+
+Manages authentication credentials for task execution.
+
+#### Example Usage
+
+```hcl
+resource "stonebranch_credential" "service_account" {
+  name             = "service-account-creds"
+  runtime_user     = "svc_user"
+  runtime_password = var.service_password
+}
+```
+
 ## Development
 
 ### Project Structure
 
 ```
 terraform-provider-stonebranch/
-├── main.go                     # Provider entry point
+├── main.go                          # Provider entry point
 ├── internal/
 │   ├── provider/
-│   │   ├── provider.go         # Provider configuration and schema
-│   │   └── resource_task_unix.go  # Unix task resource
+│   │   ├── provider.go              # Provider configuration and schema
+│   │   └── resources/               # Resource implementations
+│   │       ├── helpers.go           # Shared helper functions
+│   │       ├── task_unix.go         # Unix task resource
+│   │       ├── taskwindows.go       # Windows task resource
+│   │       ├── task_file_transfer.go # File transfer task
+│   │       ├── script.go            # Script resource
+│   │       ├── trigger_time.go      # Time trigger resource
+│   │       └── credential.go        # Credential resource
+│   ├── acctest/
+│   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
-│       └── client.go           # StoneBranch API HTTP client
+│       └── client.go                # StoneBranch API HTTP client
 ├── examples/
-│   ├── dev.tfrc                # Development override config
+│   ├── dev.tfrc                     # Development override config
 │   └── provider/
-│       └── main.tf             # Example Terraform configuration
-├── Makefile                    # Build automation
-└── openapi.yaml                # StoneBranch API specification
+│       └── main.tf                  # Example Terraform configuration
+├── Makefile                         # Build automation
+├── CLAUDE.md                        # AI assistant context
+├── ROADMAP.md                       # Development roadmap
+└── openapi.yaml                     # StoneBranch API specification
 ```
 
 ### Useful Commands

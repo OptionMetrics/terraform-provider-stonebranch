@@ -1,4 +1,4 @@
-package provider
+package resources
 
 import (
 	"context"
@@ -363,16 +363,16 @@ func (r *CredentialResource) fromAPIModel(ctx context.Context, apiModel *Credent
 	data.Version = types.Int64Value(apiModel.Version)
 
 	// Basic info
-	data.Description = stringValueOrNull(apiModel.Description)
+	data.Description = StringValueOrNull(apiModel.Description)
 
 	// Runtime credentials - Note: passwords/tokens are NOT returned by the API for security
 	// We preserve the values from the plan/state since the API won't return them
-	data.RuntimeUser = stringValueOrNull(apiModel.RuntimeUser)
+	data.RuntimeUser = StringValueOrNull(apiModel.RuntimeUser)
 	// RuntimePassword, RuntimePassphrase, RuntimeToken are NOT read back from API
-	data.RuntimeKeyLocation = stringValueOrNull(apiModel.RuntimeKeyLocation)
+	data.RuntimeKeyLocation = StringValueOrNull(apiModel.RuntimeKeyLocation)
 
 	// Provider
-	data.Provider = stringValueOrNull(apiModel.Provider)
+	data.Provider = StringValueOrNull(apiModel.Provider)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

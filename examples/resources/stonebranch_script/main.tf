@@ -1,0 +1,89 @@
+# Stonebranch Script Example
+#
+# This example demonstrates how to create reusable script resources in Stonebranch.
+#
+# Usage:
+#   export STONEBRANCH_API_TOKEN="your-token"
+#   terraform init
+#   terraform plan
+#   terraform apply
+
+terraform {
+  required_providers {
+    stonebranch = {
+      source = "stonebranch/stonebranch"
+    }
+  }
+}
+
+provider "stonebranch" {
+  # Uses STONEBRANCH_API_TOKEN environment variable
+}
+
+# Simple bash script
+resource "stonebranch_script" "bash_simple" {
+  name        = "tf-example-bash-simple"
+  description = "Simple bash script example"
+  content     = <<-EOT
+    #!/bin/bash
+    echo "Hello from Terraform-managed script!"
+    echo "Current date: $(date)"
+  EOT
+}
+
+# Bash script with variable resolution
+resource "stonebranch_script" "bash_with_vars" {
+  name              = "tf-example-bash-vars"
+  description       = "Bash script with Stonebranch variable substitution"
+  resolve_variables = true
+  content           = <<-EOT
+    #!/bin/bash
+    # Stonebranch variables like $${_environment} will be resolved at runtime
+    echo "Environment: $${_environment}"
+    echo "Processing date: $${_date}"
+  EOT
+}
+
+# Windows batch script
+resource "stonebranch_script" "windows_batch" {
+  name        = "tf-example-windows-batch"
+  description = "Windows batch script example"
+  content     = <<-EOT
+    @echo off
+    echo Hello from Terraform-managed batch script!
+    echo Current date: %date%
+    echo Current time: %time%
+  EOT
+}
+
+# Python script
+resource "stonebranch_script" "python" {
+  name        = "tf-example-python"
+  description = "Python script example"
+  content     = <<-EOT
+    #!/usr/bin/env python3
+    import sys
+    from datetime import datetime
+
+    def main():
+        print(f"Script started at {datetime.now()}")
+        print("Processing complete")
+        return 0
+
+    if __name__ == "__main__":
+        sys.exit(main())
+  EOT
+}
+
+# Unix task that uses a script
+resource "stonebranch_task_unix" "run_script" {
+  name    = "tf-example-run-script"
+  summary = "Task that executes the bash script"
+
+  agent_var = var.agent_var
+
+  command_or_script = "Script"
+  script            = stonebranch_script.bash_simple.name
+
+  exit_codes = "0"
+}

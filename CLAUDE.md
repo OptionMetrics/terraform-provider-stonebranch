@@ -52,7 +52,7 @@ This is a custom Terraform provider for **StoneBranch Universal Controller**, bu
 
 ### Step 2: Task Unix Resource (COMPLETE)
 
-Implemented `stonebranch_task_unix` resource in `internal/provider/resource_task_unix.go`:
+Implemented `stonebranch_task_unix` resource in `internal/provider/resources/task_unix.go`:
 
 1. **Full CRUD operations**
    - Create via `POST /resources/task` (type hardcoded to `taskUnix`)
@@ -76,9 +76,35 @@ Implemented `stonebranch_task_unix` resource in `internal/provider/resource_task
 
 4. **Design decision**: Each task type is a separate resource (e.g., `stonebranch_task_unix`, `stonebranch_task_windows`) rather than a single generic resource with a type field.
 
+### Step 2a: Task Windows Resource (COMPLETE)
+
+Implemented `stonebranch_task_windows` resource in `internal/provider/resources/taskwindows.go`:
+
+**Note**: The file is named `taskwindows.go` (not `task_windows.go`) because Go interprets `_windows.go` suffix as a platform-specific build constraint that only compiles on Windows.
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type hardcoded to `taskWindows`)
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Agent: `agent`, `agent_cluster`, `agent_var`, `agent_cluster_var`
+   - Command: `command`, `command_or_script`, `script`, `runtime_dir`, `parameters`
+   - Credentials: `credentials`, `credentials_var`
+   - Exit codes: `exit_codes`, `exit_code_processing`
+   - Output: `output_type`, `wait_for_output`, `output_return_file`, etc.
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Windows-specific: `elevate_user`, `desktop_interact`, `create_console` (computed, server defaults)
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
 ### Step 2b: Script Resource (COMPLETE)
 
-Implemented `stonebranch_script` resource in `internal/provider/resource_script.go`:
+Implemented `stonebranch_script` resource in `internal/provider/resources/script.go`:
 
 1. **Full CRUD operations**
    - Create via `POST /resources/script`
@@ -98,7 +124,7 @@ Implemented `stonebranch_script` resource in `internal/provider/resource_script.
 
 ### Step 2c: Time Trigger Resource (COMPLETE)
 
-Implemented `stonebranch_trigger_time` resource in `internal/provider/resource_trigger_time.go`:
+Implemented `stonebranch_trigger_time` resource in `internal/provider/resources/trigger_time.go`:
 
 1. **Full CRUD operations**
    - Create via `POST /resources/trigger` (type = "triggerTime")
@@ -124,7 +150,8 @@ Implemented `stonebranch_trigger_time` resource in `internal/provider/resource_t
 ### Step 3: Add Additional Task Types
 
 Each task type should be a separate resource:
-- `stonebranch_task_windows` - Windows tasks
+- `stonebranch_task_windows` - Windows tasks (COMPLETE)
+- `stonebranch_task_file_transfer` - File transfer tasks (COMPLETE)
 - `stonebranch_task_sql` - SQL/Database tasks
 - `stonebranch_task_workflow` - Workflow tasks
 - `stonebranch_task_email` - Email tasks
@@ -132,8 +159,7 @@ Each task type should be a separate resource:
 
 ### Step 4: Add Other Resources
 
-- Triggers/schedules
-- Credentials
+- Additional triggers/schedules
 - Business services
 - Agent clusters
 
@@ -147,7 +173,8 @@ Implement read-only data sources for:
 ### Step 6: Testing & Documentation (COMPLETE)
 
 - Unit tests for client (`internal/client/client_test.go`)
-- Acceptance tests for resources (`internal/provider/resource_task_unix_test.go`)
+- Acceptance tests for resources (`internal/provider/resources/*_test.go`)
+- Shared test helpers (`internal/acctest/acctest.go`)
 - .env file support for credentials (auto-loaded in tests via godotenv)
 - Generated documentation (to be done)
 
@@ -230,14 +257,62 @@ terraform -chdir=examples/provider plan
 | Provider config | `internal/provider/provider.go` |
 | API client | `internal/client/client.go` |
 | Client unit tests | `internal/client/client_test.go` |
-| Task Unix resource | `internal/provider/resource_task_unix.go` |
-| Task Unix tests | `internal/provider/resource_task_unix_test.go` |
-| Script resource | `internal/provider/resource_script.go` |
-| Script tests | `internal/provider/resource_script_test.go` |
-| Time Trigger resource | `internal/provider/resource_trigger_time.go` |
-| Time Trigger tests | `internal/provider/resource_trigger_time_test.go` |
-| Test config | `internal/provider/provider_test.go` |
-| Data sources | `internal/provider/datasource_*.go` (to be created) |
+| Resource helpers | `internal/provider/resources/helpers.go` |
+| Task Unix resource | `internal/provider/resources/task_unix.go` |
+| Task Unix tests | `internal/provider/resources/task_unix_test.go` |
+| Task Windows resource | `internal/provider/resources/taskwindows.go` |
+| Task Windows tests | `internal/provider/resources/taskwindows_test.go` |
+| Task File Transfer resource | `internal/provider/resources/task_file_transfer.go` |
+| Task File Transfer tests | `internal/provider/resources/task_file_transfer_test.go` |
+| Script resource | `internal/provider/resources/script.go` |
+| Script tests | `internal/provider/resources/script_test.go` |
+| Time Trigger resource | `internal/provider/resources/trigger_time.go` |
+| Time Trigger tests | `internal/provider/resources/trigger_time_test.go` |
+| Credential resource | `internal/provider/resources/credential.go` |
+| Credential tests | `internal/provider/resources/credential_test.go` |
+| Test helpers | `internal/acctest/acctest.go` |
+| Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
 | Examples | `examples/` |
 | Environment template | `.env.example` |
+
+## Important: Go File Naming Convention
+
+Avoid using platform-specific suffixes in Go file names:
+- `_windows.go`, `_linux.go`, `_darwin.go` - Go treats these as build constraints
+- Use `taskwindows.go` instead of `task_windows.go`
+- This ensures the file compiles on all platforms
+
+## Project Structure
+
+```
+terraform-provider-stonebranch/
+├── main.go                          # Provider entry point
+├── internal/
+│   ├── provider/
+│   │   ├── provider.go              # Provider configuration
+│   │   └── resources/               # Resource implementations
+│   │       ├── helpers.go           # Shared helper functions
+│   │       ├── task_unix.go
+│   │       ├── task_unix_test.go
+│   │       ├── taskwindows.go
+│   │       ├── taskwindows_test.go
+│   │       ├── task_file_transfer.go
+│   │       ├── task_file_transfer_test.go
+│   │       ├── script.go
+│   │       ├── script_test.go
+│   │       ├── trigger_time.go
+│   │       ├── trigger_time_test.go
+│   │       ├── credential.go
+│   │       └── credential_test.go
+│   ├── acctest/
+│   │   └── acctest.go               # Acceptance test helpers
+│   └── client/
+│       ├── client.go                # API client
+│       └── client_test.go           # Client unit tests
+├── examples/                        # Example configurations
+├── CLAUDE.md                        # AI assistant context
+├── README.md                        # User documentation
+├── ROADMAP.md                       # Development roadmap
+└── openapi.yaml                     # StoneBranch API spec
+```

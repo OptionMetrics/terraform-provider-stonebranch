@@ -1,4 +1,4 @@
-package provider
+package resources_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+
+	sbacctest "terraform-provider-stonebranch/internal/acctest"
 )
 
 func TestAccTaskFileTransferResource_basic(t *testing.T) {
@@ -13,8 +15,8 @@ func TestAccTaskFileTransferResource_basic(t *testing.T) {
 	resourceName := "stonebranch_task_file_transfer.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read
 			{
@@ -50,8 +52,8 @@ func TestAccTaskFileTransferResource_withSummary(t *testing.T) {
 	resourceName := "stonebranch_task_file_transfer.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTaskFileTransferConfig_withSummary(rName, "Initial summary"),
@@ -73,7 +75,7 @@ func TestAccTaskFileTransferResource_withSummary(t *testing.T) {
 // Test configuration helpers
 
 func testAccTaskFileTransferConfig_basic(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_file_transfer" "test" {
   name                   = %[1]q
   agent_var              = "agent_name"
@@ -86,7 +88,7 @@ resource "stonebranch_task_file_transfer" "test" {
 }
 
 func testAccTaskFileTransferConfig_updated(name string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_file_transfer" "test" {
   name                   = %[1]q
   summary                = "Updated file transfer task"
@@ -100,7 +102,7 @@ resource "stonebranch_task_file_transfer" "test" {
 }
 
 func testAccTaskFileTransferConfig_withSummary(name, summary string) string {
-	return providerConfig() + fmt.Sprintf(`
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
 resource "stonebranch_task_file_transfer" "test" {
   name                   = %[1]q
   summary                = %[2]q

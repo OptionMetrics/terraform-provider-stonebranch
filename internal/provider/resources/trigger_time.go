@@ -1,4 +1,4 @@
-package provider
+package resources
 
 import (
 	"context"
@@ -470,18 +470,18 @@ func (r *TriggerTimeResource) fromAPIModel(ctx context.Context, apiModel *Trigge
 	data.Version = types.Int64Value(apiModel.Version)
 
 	// Basic info
-	data.Description = stringValueOrNull(apiModel.Description)
+	data.Description = StringValueOrNull(apiModel.Description)
 	data.Enabled = types.BoolValue(apiModel.Enabled)
 
 	// Time configuration
-	data.Time = stringValueOrNull(apiModel.Time)
-	data.TimeZone = stringValueOrNull(apiModel.TimeZone)
-	data.TimeStyle = stringValueOrNull(apiModel.TimeStyle)
+	data.Time = StringValueOrNull(apiModel.Time)
+	data.TimeZone = StringValueOrNull(apiModel.TimeZone)
+	data.TimeStyle = StringValueOrNull(apiModel.TimeStyle)
 	data.TimeInterval = types.Int64Value(apiModel.TimeInterval)
-	data.TimeIntervalUnits = stringValueOrNull(apiModel.TimeIntervalUnits)
+	data.TimeIntervalUnits = StringValueOrNull(apiModel.TimeIntervalUnits)
 
 	// Day configuration
-	data.DayStyle = stringValueOrNull(apiModel.DayStyle)
+	data.DayStyle = StringValueOrNull(apiModel.DayStyle)
 	data.DayInterval = types.Int64Value(apiModel.DayInterval)
 
 	// Day of week flags
@@ -494,7 +494,7 @@ func (r *TriggerTimeResource) fromAPIModel(ctx context.Context, apiModel *Trigge
 	data.Saturday = types.BoolValue(apiModel.Sat)
 
 	// Calendar
-	data.Calendar = stringValueOrNull(apiModel.Calendar)
+	data.Calendar = StringValueOrNull(apiModel.Calendar)
 
 	// Handle tasks list
 	if len(apiModel.Tasks) > 0 {

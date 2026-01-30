@@ -1,4 +1,4 @@
-package provider
+package resources
 
 import (
 	"context"
@@ -19,21 +19,21 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &TaskUnixResource{}
-	_ resource.ResourceWithImportState = &TaskUnixResource{}
+	_ resource.Resource                = &TaskWindowsResource{}
+	_ resource.ResourceWithImportState = &TaskWindowsResource{}
 )
 
-func NewTaskUnixResource() resource.Resource {
-	return &TaskUnixResource{}
+func NewTaskWindowsResource() resource.Resource {
+	return &TaskWindowsResource{}
 }
 
-// TaskUnixResource defines the resource implementation.
-type TaskUnixResource struct {
+// TaskWindowsResource defines the resource implementation.
+type TaskWindowsResource struct {
 	client *client.Client
 }
 
-// TaskUnixResourceModel describes the resource data model.
-type TaskUnixResourceModel struct {
+// TaskWindowsResourceModel describes the resource data model.
+type TaskWindowsResourceModel struct {
 	// Identity
 	SysId   types.String `tfsdk:"sys_id"`
 	Name    types.String `tfsdk:"name"`
@@ -77,15 +77,17 @@ type TaskUnixResourceModel struct {
 	RetryInterval        types.Int64 `tfsdk:"retry_interval"`
 	RetrySuppressFailure types.Bool  `tfsdk:"retry_suppress_failure"`
 
-	// Unix-specific
-	RunAsSudo types.Bool `tfsdk:"run_as_sudo"`
+	// Windows-specific
+	ElevateUser     types.Bool `tfsdk:"elevate_user"`
+	DesktopInteract types.Bool `tfsdk:"desktop_interact"`
+	CreateConsole   types.Bool `tfsdk:"create_console"`
 
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
 
-// TaskAPIModel represents the API request/response structure.
-type TaskAPIModel struct {
+// TaskWindowsAPIModel represents the API request/response structure.
+type TaskWindowsAPIModel struct {
 	SysId   string `json:"sysId,omitempty"`
 	Name    string `json:"name"`
 	Version int64  `json:"version,omitempty"`
@@ -121,18 +123,21 @@ type TaskAPIModel struct {
 	RetryInterval        int64 `json:"retryInterval,omitempty"`
 	RetrySuppressFailure bool  `json:"retrySuppressFailure,omitempty"`
 
-	RunAsSudo bool `json:"runAsSudo,omitempty"`
+	// Windows-specific
+	ElevateUser     bool `json:"elevateUser,omitempty"`
+	DesktopInteract bool `json:"desktopInteract,omitempty"`
+	CreateConsole   bool `json:"createConsole,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
 
-func (r *TaskUnixResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_task_unix"
+func (r *TaskWindowsResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_task_windows"
 }
 
-func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *TaskWindowsResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a StoneBranch Task (Unix/Linux task type).",
+		MarkdownDescription: "Manages a StoneBranch Task (Windows task type).",
 
 		Attributes: map[string]schema.Attribute{
 			// Identity
@@ -274,9 +279,19 @@ func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 			},
 
-			// Unix-specific
-			"run_as_sudo": schema.BoolAttribute{
-				MarkdownDescription: "Whether to run the command with sudo.",
+			// Windows-specific
+			"elevate_user": schema.BoolAttribute{
+				MarkdownDescription: "Whether to run the task with elevated (administrator) privileges.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"desktop_interact": schema.BoolAttribute{
+				MarkdownDescription: "Whether the task can interact with the desktop.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"create_console": schema.BoolAttribute{
+				MarkdownDescription: "Whether to create a console window for the task.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -291,7 +306,7 @@ func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaReques
 	}
 }
 
-func (r *TaskUnixResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *TaskWindowsResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -308,15 +323,15 @@ func (r *TaskUnixResource) Configure(ctx context.Context, req resource.Configure
 	r.client = client
 }
 
-func (r *TaskUnixResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var data TaskUnixResourceModel
+func (r *TaskWindowsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var data TaskWindowsResourceModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Creating task", map[string]any{"name": data.Name.ValueString()})
+	tflog.Debug(ctx, "Creating Windows task", map[string]any{"name": data.Name.ValueString()})
 
 	// Build API model
 	apiModel := r.toAPIModel(ctx, &data)
@@ -325,7 +340,7 @@ func (r *TaskUnixResource) Create(ctx context.Context, req resource.CreateReques
 	_, err := r.client.Post(ctx, "/resources/task", apiModel)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Creating Task",
+			"Error Creating Windows Task",
 			fmt.Sprintf("Could not create task %s: %s", data.Name.ValueString(), err),
 		)
 		return
@@ -335,19 +350,19 @@ func (r *TaskUnixResource) Create(ctx context.Context, req resource.CreateReques
 	err = r.readTask(ctx, &data)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading Created Task",
+			"Error Reading Created Windows Task",
 			fmt.Sprintf("Could not read task %s after creation: %s", data.Name.ValueString(), err),
 		)
 		return
 	}
 
-	tflog.Debug(ctx, "Created task", map[string]any{"sys_id": data.SysId.ValueString()})
+	tflog.Debug(ctx, "Created Windows task", map[string]any{"sys_id": data.SysId.ValueString()})
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (r *TaskUnixResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var data TaskUnixResourceModel
+func (r *TaskWindowsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var data TaskWindowsResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
@@ -358,12 +373,12 @@ func (r *TaskUnixResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if err != nil {
 		// Check if task was deleted outside of Terraform
 		if apiErr, ok := err.(*client.APIError); ok && apiErr.StatusCode == 404 {
-			tflog.Debug(ctx, "Task not found, removing from state", map[string]any{"name": data.Name.ValueString()})
+			tflog.Debug(ctx, "Windows task not found, removing from state", map[string]any{"name": data.Name.ValueString()})
 			resp.State.RemoveResource(ctx)
 			return
 		}
 		resp.Diagnostics.AddError(
-			"Error Reading Task",
+			"Error Reading Windows Task",
 			fmt.Sprintf("Could not read task %s: %s", data.Name.ValueString(), err),
 		)
 		return
@@ -372,8 +387,8 @@ func (r *TaskUnixResource) Read(ctx context.Context, req resource.ReadRequest, r
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var data TaskUnixResourceModel
+func (r *TaskWindowsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var data TaskWindowsResourceModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
@@ -381,7 +396,7 @@ func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	// Get current state for sysId
-	var state TaskUnixResourceModel
+	var state TaskWindowsResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -390,7 +405,7 @@ func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateReques
 	// Preserve sysId from state
 	data.SysId = state.SysId
 
-	tflog.Debug(ctx, "Updating task", map[string]any{"sys_id": data.SysId.ValueString()})
+	tflog.Debug(ctx, "Updating Windows task", map[string]any{"sys_id": data.SysId.ValueString()})
 
 	// Build API model
 	apiModel := r.toAPIModel(ctx, &data)
@@ -399,7 +414,7 @@ func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateReques
 	_, err := r.client.Put(ctx, "/resources/task", apiModel)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Updating Task",
+			"Error Updating Windows Task",
 			fmt.Sprintf("Could not update task %s: %s", data.Name.ValueString(), err),
 		)
 		return
@@ -409,7 +424,7 @@ func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateReques
 	err = r.readTask(ctx, &data)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading Updated Task",
+			"Error Reading Updated Windows Task",
 			fmt.Sprintf("Could not read task %s after update: %s", data.Name.ValueString(), err),
 		)
 		return
@@ -418,15 +433,15 @@ func (r *TaskUnixResource) Update(ctx context.Context, req resource.UpdateReques
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (r *TaskUnixResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var data TaskUnixResourceModel
+func (r *TaskWindowsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var data TaskWindowsResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Deleting task", map[string]any{"sys_id": data.SysId.ValueString()})
+	tflog.Debug(ctx, "Deleting Windows task", map[string]any{"sys_id": data.SysId.ValueString()})
 
 	query := url.Values{}
 	query.Set("taskid", data.SysId.ValueString())
@@ -438,19 +453,19 @@ func (r *TaskUnixResource) Delete(ctx context.Context, req resource.DeleteReques
 			return
 		}
 		resp.Diagnostics.AddError(
-			"Error Deleting Task",
+			"Error Deleting Windows Task",
 			fmt.Sprintf("Could not delete task %s: %s", data.Name.ValueString(), err),
 		)
 		return
 	}
 }
 
-func (r *TaskUnixResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *TaskWindowsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("name"), req, resp)
 }
 
 // readTask fetches the task from the API and updates the model.
-func (r *TaskUnixResource) readTask(ctx context.Context, data *TaskUnixResourceModel) error {
+func (r *TaskWindowsResource) readTask(ctx context.Context, data *TaskWindowsResourceModel) error {
 	query := url.Values{}
 	query.Set("taskname", data.Name.ValueString())
 
@@ -459,7 +474,7 @@ func (r *TaskUnixResource) readTask(ctx context.Context, data *TaskUnixResourceM
 		return err
 	}
 
-	var apiModel TaskAPIModel
+	var apiModel TaskWindowsAPIModel
 	if err := json.Unmarshal(respBody, &apiModel); err != nil {
 		return fmt.Errorf("failed to parse task response: %w", err)
 	}
@@ -469,11 +484,11 @@ func (r *TaskUnixResource) readTask(ctx context.Context, data *TaskUnixResourceM
 }
 
 // toAPIModel converts the Terraform model to an API model.
-func (r *TaskUnixResource) toAPIModel(ctx context.Context, data *TaskUnixResourceModel) *TaskAPIModel {
-	model := &TaskAPIModel{
+func (r *TaskWindowsResource) toAPIModel(ctx context.Context, data *TaskWindowsResourceModel) *TaskWindowsAPIModel {
+	model := &TaskWindowsAPIModel{
 		SysId:   data.SysId.ValueString(),
 		Name:    data.Name.ValueString(),
-		Type:    "taskUnix",
+		Type:    "taskWindows",
 		Summary: data.Summary.ValueString(),
 
 		Agent:           data.Agent.ValueString(),
@@ -505,7 +520,10 @@ func (r *TaskUnixResource) toAPIModel(ctx context.Context, data *TaskUnixResourc
 		RetryInterval:        data.RetryInterval.ValueInt64(),
 		RetrySuppressFailure: data.RetrySuppressFailure.ValueBool(),
 
-		RunAsSudo: data.RunAsSudo.ValueBool(),
+		// Windows-specific
+		ElevateUser:     data.ElevateUser.ValueBool(),
+		DesktopInteract: data.DesktopInteract.ValueBool(),
+		CreateConsole:   data.CreateConsole.ValueBool(),
 	}
 
 	// Handle opswise_groups list
@@ -519,32 +537,32 @@ func (r *TaskUnixResource) toAPIModel(ctx context.Context, data *TaskUnixResourc
 }
 
 // fromAPIModel converts an API model to the Terraform model.
-func (r *TaskUnixResource) fromAPIModel(ctx context.Context, apiModel *TaskAPIModel, data *TaskUnixResourceModel) {
+func (r *TaskWindowsResource) fromAPIModel(ctx context.Context, apiModel *TaskWindowsAPIModel, data *TaskWindowsResourceModel) {
 	// Identity fields - always set
 	data.SysId = types.StringValue(apiModel.SysId)
 	data.Name = types.StringValue(apiModel.Name)
 	data.Version = types.Int64Value(apiModel.Version)
 
 	// Optional fields - only set if non-empty (these are truly optional)
-	data.Summary = stringValueOrNull(apiModel.Summary)
-	data.Agent = stringValueOrNull(apiModel.Agent)
-	data.AgentCluster = stringValueOrNull(apiModel.AgentCluster)
-	data.AgentVar = stringValueOrNull(apiModel.AgentVar)
-	data.AgentClusterVar = stringValueOrNull(apiModel.AgentClusterVar)
-	data.Command = stringValueOrNull(apiModel.Command)
-	data.Script = stringValueOrNull(apiModel.Script)
-	data.RuntimeDir = stringValueOrNull(apiModel.RuntimeDir)
-	data.Parameters = stringValueOrNull(apiModel.Parameters)
-	data.Credentials = stringValueOrNull(apiModel.Credentials)
-	data.CredentialsVar = stringValueOrNull(apiModel.CredentialsVar)
-	data.ExitCodes = stringValueOrNull(apiModel.ExitCodes)
-	data.ExitCodeProcessing = stringValueOrNull(apiModel.ExitCodeProcessing)
+	data.Summary = StringValueOrNull(apiModel.Summary)
+	data.Agent = StringValueOrNull(apiModel.Agent)
+	data.AgentCluster = StringValueOrNull(apiModel.AgentCluster)
+	data.AgentVar = StringValueOrNull(apiModel.AgentVar)
+	data.AgentClusterVar = StringValueOrNull(apiModel.AgentClusterVar)
+	data.Command = StringValueOrNull(apiModel.Command)
+	data.Script = StringValueOrNull(apiModel.Script)
+	data.RuntimeDir = StringValueOrNull(apiModel.RuntimeDir)
+	data.Parameters = StringValueOrNull(apiModel.Parameters)
+	data.Credentials = StringValueOrNull(apiModel.Credentials)
+	data.CredentialsVar = StringValueOrNull(apiModel.CredentialsVar)
+	data.ExitCodes = StringValueOrNull(apiModel.ExitCodes)
+	data.ExitCodeProcessing = StringValueOrNull(apiModel.ExitCodeProcessing)
 
 	// Computed fields - always set from API (server provides defaults)
 	data.CommandOrScript = types.StringValue(apiModel.CommandOrScript)
 	data.OutputType = types.StringValue(apiModel.OutputType)
 	data.WaitForOutput = types.BoolValue(apiModel.WaitForOutput)
-	data.OutputReturnFile = stringValueOrNull(apiModel.OutputReturnFile)
+	data.OutputReturnFile = StringValueOrNull(apiModel.OutputReturnFile)
 	data.OutputReturnType = types.StringValue(apiModel.OutputReturnType)
 	data.OutputReturnSline = types.StringValue(apiModel.OutputReturnSline)
 	data.OutputReturnNline = types.StringValue(apiModel.OutputReturnNline)
@@ -554,19 +572,14 @@ func (r *TaskUnixResource) fromAPIModel(ctx context.Context, apiModel *TaskAPIMo
 	data.RetryInterval = types.Int64Value(apiModel.RetryInterval)
 	data.RetrySuppressFailure = types.BoolValue(apiModel.RetrySuppressFailure)
 
-	data.RunAsSudo = types.BoolValue(apiModel.RunAsSudo)
+	// Windows-specific
+	data.ElevateUser = types.BoolValue(apiModel.ElevateUser)
+	data.DesktopInteract = types.BoolValue(apiModel.DesktopInteract)
+	data.CreateConsole = types.BoolValue(apiModel.CreateConsole)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {
 		groups, _ := types.ListValueFrom(ctx, types.StringType, apiModel.OpswiseGroups)
 		data.OpswiseGroups = groups
 	}
-}
-
-// stringValueOrNull returns a StringValue if s is non-empty, otherwise StringNull.
-func stringValueOrNull(s string) types.String {
-	if s == "" {
-		return types.StringNull()
-	}
-	return types.StringValue(s)
 }

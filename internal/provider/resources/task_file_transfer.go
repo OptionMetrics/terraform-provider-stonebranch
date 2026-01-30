@@ -1,4 +1,4 @@
-package provider
+package resources
 
 import (
 	"context"
@@ -71,7 +71,7 @@ type TaskFileTransferResourceModel struct {
 	ExitCodeProcessing types.String `tfsdk:"exit_code_processing"`
 
 	// Options
-	UseRegex types.Bool `tfsdk:"use_regex"`
+	UseRegex types.Bool   `tfsdk:"use_regex"`
 	Encrypt  types.String `tfsdk:"encrypt"`
 	Compress types.String `tfsdk:"compress"`
 
@@ -486,40 +486,40 @@ func (r *TaskFileTransferResource) fromAPIModel(ctx context.Context, apiModel *T
 	data.Version = types.Int64Value(apiModel.Version)
 
 	// Basic info
-	data.Summary = stringValueOrNull(apiModel.Summary)
+	data.Summary = StringValueOrNull(apiModel.Summary)
 
 	// Agent configuration
-	data.Agent = stringValueOrNull(apiModel.Agent)
-	data.AgentCluster = stringValueOrNull(apiModel.AgentCluster)
-	data.AgentVar = stringValueOrNull(apiModel.AgentVar)
-	data.AgentClusterVar = stringValueOrNull(apiModel.AgentClusterVar)
+	data.Agent = StringValueOrNull(apiModel.Agent)
+	data.AgentCluster = StringValueOrNull(apiModel.AgentCluster)
+	data.AgentVar = StringValueOrNull(apiModel.AgentVar)
+	data.AgentClusterVar = StringValueOrNull(apiModel.AgentClusterVar)
 
 	// Transfer configuration
-	data.TransferDirection = stringValueOrNull(apiModel.TransferDirection)
-	data.TransferMode = stringValueOrNull(apiModel.TransferMode)
-	data.ServerType = stringValueOrNull(apiModel.ServerType)
+	data.TransferDirection = StringValueOrNull(apiModel.TransferDirection)
+	data.TransferMode = StringValueOrNull(apiModel.TransferMode)
+	data.ServerType = StringValueOrNull(apiModel.ServerType)
 
 	// Remote configuration
-	data.RemoteServer = stringValueOrNull(apiModel.RemoteServer)
-	data.RemoteFilename = stringValueOrNull(apiModel.RemoteFilename)
-	data.RemoteCredentials = stringValueOrNull(apiModel.RemoteCredentials)
-	data.RemoteCredVar = stringValueOrNull(apiModel.RemoteCredVar)
+	data.RemoteServer = StringValueOrNull(apiModel.RemoteServer)
+	data.RemoteFilename = StringValueOrNull(apiModel.RemoteFilename)
+	data.RemoteCredentials = StringValueOrNull(apiModel.RemoteCredentials)
+	data.RemoteCredVar = StringValueOrNull(apiModel.RemoteCredVar)
 
 	// Local configuration
-	data.LocalFilename = stringValueOrNull(apiModel.LocalFilename)
+	data.LocalFilename = StringValueOrNull(apiModel.LocalFilename)
 
 	// Credentials
-	data.Credentials = stringValueOrNull(apiModel.Credentials)
-	data.CredentialsVar = stringValueOrNull(apiModel.CredentialsVar)
+	data.Credentials = StringValueOrNull(apiModel.Credentials)
+	data.CredentialsVar = StringValueOrNull(apiModel.CredentialsVar)
 
 	// Exit code handling
-	data.ExitCodes = stringValueOrNull(apiModel.ExitCodes)
-	data.ExitCodeProcessing = stringValueOrNull(apiModel.ExitCodeProcessing)
+	data.ExitCodes = StringValueOrNull(apiModel.ExitCodes)
+	data.ExitCodeProcessing = StringValueOrNull(apiModel.ExitCodeProcessing)
 
 	// Options
 	data.UseRegex = types.BoolValue(apiModel.UseRegex)
-	data.Encrypt = stringValueOrNull(apiModel.Encrypt)
-	data.Compress = stringValueOrNull(apiModel.Compress)
+	data.Encrypt = StringValueOrNull(apiModel.Encrypt)
+	data.Compress = StringValueOrNull(apiModel.Compress)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {
