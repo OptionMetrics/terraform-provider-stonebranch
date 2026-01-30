@@ -270,6 +270,8 @@ terraform -chdir=examples/provider plan
 | Time Trigger tests | `internal/provider/resources/trigger_time_test.go` |
 | Credential resource | `internal/provider/resources/credential.go` |
 | Credential tests | `internal/provider/resources/credential_test.go` |
+| Variable resource | `internal/provider/resources/variable.go` |
+| Variable tests | `internal/provider/resources/variable_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -304,7 +306,9 @@ terraform-provider-stonebranch/
 │   │       ├── trigger_time.go
 │   │       ├── trigger_time_test.go
 │   │       ├── credential.go
-│   │       └── credential_test.go
+│   │       ├── credential_test.go
+│   │       ├── variable.go
+│   │       └── variable_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/

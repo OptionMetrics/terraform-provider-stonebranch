@@ -16,6 +16,7 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_trigger_time` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_file_transfer` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_credential` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_variable` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
@@ -45,7 +46,7 @@ These are the most commonly used task types that form the foundation of most aut
 |----------|-------------|----------|--------|
 | `stonebranch_script` | Reusable scripts | P0 | ✅ Complete |
 | `stonebranch_credential` | Authentication credentials | P0 | ✅ Complete |
-| `stonebranch_variable` | Global/scoped variables | P0 | 🔲 Not Started |
+| `stonebranch_variable` | Global/scoped variables | P0 | ✅ Complete |
 | `stonebranch_database_connection` | Database connection definitions | P0 | 🔲 Not Started |
 | `stonebranch_email_connection` | Email server connections | P1 | 🔲 Not Started |
 
@@ -55,7 +56,7 @@ These are the most commonly used task types that form the foundation of most aut
 - [ ] `stonebranch_task_stored_procedure` resource with full CRUD
 - [ ] `stonebranch_task_email` resource with full CRUD
 - [ ] `stonebranch_task_web_service` resource with full CRUD
-- [ ] `stonebranch_variable` resource with full CRUD
+- [x] `stonebranch_variable` resource with full CRUD
 - [ ] `stonebranch_database_connection` resource with full CRUD
 - [ ] `stonebranch_email_connection` resource with full CRUD
 - [ ] Acceptance tests for all resources
@@ -375,6 +376,7 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_trigger_time` | ✅ Acceptance tests |
 | `stonebranch_task_file_transfer` | ✅ Acceptance tests |
 | `stonebranch_credential` | ✅ Acceptance tests |
+| `stonebranch_variable` | ✅ Acceptance tests |
 
 ---
 
@@ -441,9 +443,9 @@ docs/
 | Task Types | 20 | 3 |
 | Trigger Types | 12 | 1 |
 | Connection Types | 5 | 0 |
-| Supporting Resources | 15 | 2 |
+| Supporting Resources | 15 | 3 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **6** |
+| **Total** | **63** | **7** |
 
 ### Priority Breakdown
 
