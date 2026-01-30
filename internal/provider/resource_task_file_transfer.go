@@ -168,7 +168,7 @@ func (r *TaskFileTransferResource) Schema(ctx context.Context, req resource.Sche
 
 			// Transfer configuration
 			"transfer_direction": schema.StringAttribute{
-				MarkdownDescription: "Direction of file transfer: 'Download' (remote to local) or 'Upload' (local to remote).",
+				MarkdownDescription: "Direction of file transfer: 'GET' (remote to local) or 'PUT' (local to remote). Default is 'PUT'. Only applies to UDM agents.",
 				Optional:            true,
 				Computed:            true,
 			},

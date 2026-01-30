@@ -109,8 +109,8 @@ resource "stonebranch_task_file_transfer" "download_report" {
 
   agent = var.agent_name
 
-  # Transfer settings
-  transfer_direction = "Download"
+  # Transfer settings (GET = download from remote, PUT = upload to remote)
+  transfer_direction = "GET"
   server_type        = "SFTP"
 
   # Remote server configuration
