@@ -122,6 +122,7 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 		NewTaskFileTransferResource,
 		NewScriptResource,
 		NewTriggerTimeResource,
+		NewCredentialResource,
 	}
 }
 

@@ -87,6 +87,21 @@ resource "stonebranch_trigger_time" "daily_backup" {
   time_zone = "America/New_York"
 }
 
+# Example: Credential resource for SFTP authentication
+resource "stonebranch_credential" "sftp_creds" {
+  name             = "terraform-sftp-credentials"
+  description      = "SFTP credentials managed by Terraform"
+  runtime_user     = "sftpuser"
+  runtime_password = var.sftp_password  # Use a variable for sensitive data
+}
+
+variable "sftp_password" {
+  description = "Password for SFTP connection"
+  type        = string
+  sensitive   = true
+  default     = "placeholder"  # Set via environment or tfvars
+}
+
 # Example: File Transfer task for SFTP download
 resource "stonebranch_task_file_transfer" "download_report" {
   name    = "terraform-download-report"
@@ -105,6 +120,6 @@ resource "stonebranch_task_file_transfer" "download_report" {
   # Local destination
   local_filename = "/data/reports/daily_report.csv"
 
-  # Credentials (reference a credentials resource by name)
-  # remote_credentials = "sftp-credentials"
+  # Reference the credential resource
+  remote_credentials = stonebranch_credential.sftp_creds.name
 }
