@@ -109,9 +109,9 @@ resource "stonebranch_task_file_transfer" "download_report" {
 
   agent = var.agent_name
 
-  # Transfer settings (GET = download from remote, PUT = upload to remote)
-  transfer_direction = "GET"
-  server_type        = "SFTP"
+  # Transfer settings
+  # transfer_direction = "GET"  # Only applies to UDM agents (GET=download, PUT=upload)
+  server_type = "SFTP"
 
   # Remote server configuration
   remote_server   = "sftp.example.com"
