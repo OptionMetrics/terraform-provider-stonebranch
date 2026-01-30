@@ -20,6 +20,11 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_database_connection` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_sql` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_workflow` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_workflow_vertex` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_workflow_edge` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_email_connection` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_task_email` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_trigger_cron` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
@@ -40,7 +45,7 @@ These are the most commonly used task types that form the foundation of most aut
 | `stonebranch_task_sql` | SQL query execution | P0 | ✅ Complete |
 | `stonebranch_task_stored_procedure` | Stored procedure execution | P1 | 🔲 Not Started |
 | `stonebranch_task_file_transfer` | File transfer (FTP/SFTP) | P0 | ✅ Complete |
-| `stonebranch_task_email` | Email notifications | P1 | 🔲 Not Started |
+| `stonebranch_task_email` | Email notifications | P1 | ✅ Complete |
 | `stonebranch_task_web_service` | REST/SOAP web service calls | P1 | 🔲 Not Started |
 
 ### Supporting Resources
@@ -51,17 +56,17 @@ These are the most commonly used task types that form the foundation of most aut
 | `stonebranch_credential` | Authentication credentials | P0 | ✅ Complete |
 | `stonebranch_variable` | Global/scoped variables | P0 | ✅ Complete |
 | `stonebranch_database_connection` | Database connection definitions | P0 | ✅ Complete |
-| `stonebranch_email_connection` | Email server connections | P1 | 🔲 Not Started |
+| `stonebranch_email_connection` | Email server connections | P1 | ✅ Complete |
 
 ### Deliverables
 - [x] `stonebranch_task_windows` resource with full CRUD
 - [x] `stonebranch_task_sql` resource with full CRUD
 - [ ] `stonebranch_task_stored_procedure` resource with full CRUD
-- [ ] `stonebranch_task_email` resource with full CRUD
+- [x] `stonebranch_task_email` resource with full CRUD
 - [ ] `stonebranch_task_web_service` resource with full CRUD
 - [x] `stonebranch_variable` resource with full CRUD
 - [x] `stonebranch_database_connection` resource with full CRUD
-- [ ] `stonebranch_email_connection` resource with full CRUD
+- [x] `stonebranch_email_connection` resource with full CRUD
 - [ ] Acceptance tests for all resources
 - [ ] Example configurations for each resource
 
@@ -76,15 +81,15 @@ Resources for building complex workflows and orchestration patterns.
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
 | `stonebranch_task_workflow` | Workflow/DAG definitions | P0 | ✅ Complete |
-| `stonebranch_workflow_vertex` | Workflow task nodes | P1 | 🔲 Not Started |
-| `stonebranch_workflow_edge` | Workflow task connections | P1 | 🔲 Not Started |
+| `stonebranch_workflow_vertex` | Workflow task nodes | P1 | ✅ Complete |
+| `stonebranch_workflow_edge` | Workflow task connections | P1 | ✅ Complete |
 
 ### Trigger Resources
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
 | `stonebranch_trigger_time` | Time-based scheduling | P0 | ✅ Complete |
-| `stonebranch_trigger_cron` | CRON expression triggers | P0 | 🔲 Not Started |
+| `stonebranch_trigger_cron` | CRON expression triggers | P0 | ✅ Complete |
 | `stonebranch_trigger_file_monitor` | File arrival triggers | P0 | 🔲 Not Started |
 | `stonebranch_trigger_task_monitor` | Task completion triggers | P1 | 🔲 Not Started |
 | `stonebranch_trigger_manual` | Manual/on-demand triggers | P1 | 🔲 Not Started |
@@ -101,11 +106,13 @@ Resources for building complex workflows and orchestration patterns.
 | `stonebranch_virtual_resource` | Concurrency control | P1 | 🔲 Not Started |
 
 ### Deliverables
-- [x] `stonebranch_task_workflow` resource (vertices/edges managed via UI)
+- [x] `stonebranch_task_workflow` resource
+- [x] `stonebranch_workflow_vertex` resource for adding tasks to workflows
+- [x] `stonebranch_workflow_edge` resource for task dependencies
 - [ ] All trigger type resources
 - [ ] `stonebranch_virtual_resource` for concurrency control
-- [ ] Workflow composition examples
-- [ ] Acceptance tests for all resources
+- [x] Workflow composition examples
+- [x] Acceptance tests for workflow resources
 
 ---
 
@@ -383,6 +390,11 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_database_connection` | ✅ Acceptance tests |
 | `stonebranch_task_sql` | ✅ Acceptance tests |
 | `stonebranch_task_workflow` | ✅ Acceptance tests |
+| `stonebranch_workflow_vertex` | ✅ Acceptance tests |
+| `stonebranch_workflow_edge` | ✅ Acceptance tests |
+| `stonebranch_email_connection` | ✅ Acceptance tests |
+| `stonebranch_task_email` | ✅ Acceptance tests |
+| `stonebranch_trigger_cron` | ✅ Acceptance tests |
 
 ---
 
@@ -446,12 +458,12 @@ docs/
 
 | Category | Count | Implemented |
 |----------|-------|-------------|
-| Task Types | 20 | 5 |
-| Trigger Types | 12 | 1 |
-| Connection Types | 5 | 0 |
-| Supporting Resources | 15 | 4 |
+| Task Types | 20 | 7 |
+| Trigger Types | 12 | 2 |
+| Connection Types | 5 | 2 |
+| Supporting Resources | 15 | 6 |
 | Data Sources | 11 | 0 |
-| **Total** | **63** | **10** |
+| **Total** | **63** | **15** |
 
 ### Priority Breakdown
 
@@ -512,15 +524,19 @@ docs/
 
 ### v0.2.0 - Core Tasks
 - [x] Windows task resource
-- [ ] SQL task resource
-- [ ] Email task resource
+- [x] SQL task resource
+- [x] Email task resource
 - [ ] Web service task resource
-- [ ] Variable resource
-- [ ] Database connection resource
+- [x] Variable resource
+- [x] Database connection resource
+- [x] Email connection resource
 
 ### v0.3.0 - Workflows
-- [ ] Workflow task resource
-- [ ] Additional trigger types
+- [x] Workflow task resource
+- [x] Workflow vertex resource
+- [x] Workflow edge resource
+- [x] Cron trigger resource
+- [ ] Additional trigger types (file monitor, task monitor, etc.)
 - [ ] Virtual resources
 
 ### v0.4.0 - Scheduling
@@ -561,6 +577,8 @@ docs/
 - Triggers are created disabled by default
 - Business services are referenced via `opswise_groups` attribute
 - API uses optimistic locking via `version` field
+- Workflow composition: Use `stonebranch_workflow_vertex` to add tasks and `stonebranch_workflow_edge` to create dependencies
+- Variable naming: Must begin with letter, alphanumerics and underscore only, no `ops_` prefix
 
 ---
 

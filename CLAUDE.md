@@ -145,6 +145,185 @@ Implemented `stonebranch_trigger_time` resource in `internal/provider/resources/
 
 4. **Note**: Triggers are created disabled by default. Use the `enabled` attribute to control this.
 
+### Step 2d: Variable Resource (COMPLETE)
+
+Implemented `stonebranch_variable` resource in `internal/provider/resources/variable.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/variable`
+   - Read via `GET /resources/variable?variablename=X`
+   - Update via `PUT /resources/variable`
+   - Delete via `DELETE /resources/variable?variableid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required)
+   - Content: `value` (required), `description`
+   - Business services: `opswise_groups`
+
+3. **Import support** via variable name
+
+4. **Naming rules**: Variable names must begin with a letter. Allowable characters are alphanumerics (upper or lower case), and underscore (_). White spaces and hyphens are not permitted. Do not use the prefix `ops_` (reserved for built-in variables).
+
+### Step 2e: Database Connection Resource (COMPLETE)
+
+Implemented `stonebranch_database_connection` resource in `internal/provider/resources/database_connection.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/databaseconnection`
+   - Read via `GET /resources/databaseconnection?name=X`
+   - Update via `PUT /resources/databaseconnection`
+   - Delete via `DELETE /resources/databaseconnection?databaseconnectionid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required)
+   - Connection: `db_driver` (required), `db_url` (required)
+   - Authentication: `credentials`, `credentials_var`
+   - Optional: `description`, `max_rows`
+   - Business services: `opswise_groups`
+
+3. **Import support** via database connection name
+
+### Step 2f: SQL Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_sql` resource in `internal/provider/resources/task_sql.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskSql")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Connection: `database_connection` (required) - Note: named this way because `connection` is reserved in Terraform
+   - SQL: `sql_statement`, `sql_command`, `column_type`, `column_op` (computed), `column_value`
+   - Output: `output_type`, `output_return_file`, etc.
+   - Retry: `retry_maximum`, `retry_interval`, etc.
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+### Step 2g: Workflow Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_workflow` resource in `internal/provider/resources/task_workflow.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskWorkflow")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Workflow options: `calculate_critical_path`, `skipped_option`, `instance_wait`, `instance_wait_lookup`, `layout_option`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+### Step 2h: Workflow Vertex Resource (COMPLETE)
+
+Implemented `stonebranch_workflow_vertex` resource in `internal/provider/resources/workflow_vertex.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/workflow/vertices?workflowname=X`
+   - Read via `GET /resources/workflow/vertices?workflowname=X&vertexid=Y`
+   - Update via `PUT /resources/workflow/vertices?workflowname=X`
+   - Delete via `DELETE /resources/workflow/vertices?workflowname=X&vertexid=Y`
+
+2. **Supported attributes**
+   - Identity: `workflow_name` (required), `task_name` (required), `vertex_id` (computed)
+   - Optional: `alias` (for multiple instances of same task), `vertex_x`, `vertex_y` (diagram position)
+
+3. **Usage**: Add existing tasks to a workflow. Reference tasks by name and get back a vertex_id for creating edges.
+
+### Step 2i: Workflow Edge Resource (COMPLETE)
+
+Implemented `stonebranch_workflow_edge` resource in `internal/provider/resources/workflow_edge.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/workflow/edges?workflowname=X`
+   - Read via `GET /resources/workflow/edges?workflowname=X` (finds matching source/target)
+   - Update via `PUT /resources/workflow/edges?workflowname=X`
+   - Delete via `DELETE /resources/workflow/edges?workflowname=X&sourceid=Y&targetid=Z`
+
+2. **Supported attributes**
+   - Identity: `workflow_name` (required), `source_id` (required vertex_id), `target_id` (required vertex_id)
+   - Optional: `straight_edge` (diagram display)
+
+3. **Usage**: Create dependencies between tasks in a workflow. The source task must complete before the target task runs.
+
+### Step 2j: Email Connection Resource (COMPLETE)
+
+Implemented `stonebranch_email_connection` resource in `internal/provider/resources/email_connection.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/emailconnection`
+   - Read via `GET /resources/emailconnection?connectionname=X`
+   - Update via `PUT /resources/emailconnection`
+   - Delete via `DELETE /resources/emailconnection?connectionid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - SMTP: `smtp` (required), `smtp_port`, `smtp_ssl`, `smtp_starttls`
+   - Sender: `email_address`
+   - Authentication: `authentication`, `authentication_type`, `default_user`, `default_password` (sensitive), `oauth_client`
+   - IMAP (for reading): `imap`, `imap_port`, `imap_ssl`, `imap_starttls`, `trash_folder`
+   - Optional: `description`
+   - Business services: `opswise_groups`
+
+3. **Import support** via email connection name
+
+### Step 2k: Email Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_email` resource in `internal/provider/resources/task_email.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskEmail")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Connection: `email_connection`, `email_connection_var`
+   - Template: `template`, `template_var`
+   - Recipients: `to_recipients`, `cc_recipients`, `bcc_recipients`, `reply_to`
+   - Content: `subject`, `body`
+   - Attachments: `attach_local_file`, `local_attachments_path`, `local_attachment`
+   - Report: `report_var`, `list_report_format`
+   - Exit codes: `exit_codes`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+### Step 2l: Cron Trigger Resource (COMPLETE)
+
+Implemented `stonebranch_trigger_cron` resource in `internal/provider/resources/trigger_cron.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/trigger` (type = "triggerCron")
+   - Read via `GET /resources/trigger?triggername=X`
+   - Update via `PUT /resources/trigger`
+   - Delete via `DELETE /resources/trigger?triggerid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `description`, `enabled`
+   - Tasks: `tasks` (required, list of task names)
+   - Cron fields: `minutes`, `hours`, `day_of_month`, `month`, `day_of_week` (all required)
+   - Day logic: `day_logic` (And/Or for combining day_of_month and day_of_week)
+   - Scheduling: `time_zone`, `calendar`
+   - Business services: `opswise_groups`
+
+3. **Import support** via trigger name
+
+4. **Note**: Triggers are created disabled by default. Use the `enabled` attribute to control this.
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -152,13 +331,18 @@ Implemented `stonebranch_trigger_time` resource in `internal/provider/resources/
 Each task type should be a separate resource:
 - `stonebranch_task_windows` - Windows tasks (COMPLETE)
 - `stonebranch_task_file_transfer` - File transfer tasks (COMPLETE)
-- `stonebranch_task_sql` - SQL/Database tasks
-- `stonebranch_task_workflow` - Workflow tasks
-- `stonebranch_task_email` - Email tasks
+- `stonebranch_task_sql` - SQL/Database tasks (COMPLETE)
+- `stonebranch_task_workflow` - Workflow tasks (COMPLETE)
+- `stonebranch_task_email` - Email tasks (COMPLETE)
 - etc.
 
 ### Step 4: Add Other Resources
 
+- `stonebranch_variable` - Global variables (COMPLETE)
+- `stonebranch_database_connection` - Database connections (COMPLETE)
+- `stonebranch_email_connection` - Email connections (COMPLETE)
+- `stonebranch_workflow_vertex` - Tasks within workflows (COMPLETE)
+- `stonebranch_workflow_edge` - Dependencies between workflow tasks (COMPLETE)
 - Additional triggers/schedules
 - Business services
 - Agent clusters
@@ -268,16 +452,26 @@ terraform -chdir=examples/provider plan
 | Script tests | `internal/provider/resources/script_test.go` |
 | Time Trigger resource | `internal/provider/resources/trigger_time.go` |
 | Time Trigger tests | `internal/provider/resources/trigger_time_test.go` |
+| Cron Trigger resource | `internal/provider/resources/trigger_cron.go` |
+| Cron Trigger tests | `internal/provider/resources/trigger_cron_test.go` |
 | Credential resource | `internal/provider/resources/credential.go` |
 | Credential tests | `internal/provider/resources/credential_test.go` |
 | Variable resource | `internal/provider/resources/variable.go` |
 | Variable tests | `internal/provider/resources/variable_test.go` |
 | Database Connection resource | `internal/provider/resources/database_connection.go` |
 | Database Connection tests | `internal/provider/resources/database_connection_test.go` |
+| Email Connection resource | `internal/provider/resources/email_connection.go` |
+| Email Connection tests | `internal/provider/resources/email_connection_test.go` |
 | Task SQL resource | `internal/provider/resources/task_sql.go` |
 | Task SQL tests | `internal/provider/resources/task_sql_test.go` |
+| Task Email resource | `internal/provider/resources/task_email.go` |
+| Task Email tests | `internal/provider/resources/task_email_test.go` |
 | Task Workflow resource | `internal/provider/resources/task_workflow.go` |
 | Task Workflow tests | `internal/provider/resources/task_workflow_test.go` |
+| Workflow Vertex resource | `internal/provider/resources/workflow_vertex.go` |
+| Workflow Vertex tests | `internal/provider/resources/workflow_vertex_test.go` |
+| Workflow Edge resource | `internal/provider/resources/workflow_edge.go` |
+| Workflow Edge tests | `internal/provider/resources/workflow_edge_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Data sources | `internal/provider/data_sources/*.go` (to be created) |
 | API spec | `openapi.yaml` |
@@ -311,16 +505,26 @@ terraform-provider-stonebranch/
 │   │       ├── script_test.go
 │   │       ├── trigger_time.go
 │   │       ├── trigger_time_test.go
+│   │       ├── trigger_cron.go
+│   │       ├── trigger_cron_test.go
 │   │       ├── credential.go
 │   │       ├── credential_test.go
 │   │       ├── variable.go
 │   │       ├── variable_test.go
 │   │       ├── database_connection.go
 │   │       ├── database_connection_test.go
+│   │       ├── email_connection.go
+│   │       ├── email_connection_test.go
 │   │       ├── task_sql.go
 │   │       ├── task_sql_test.go
+│   │       ├── task_email.go
+│   │       ├── task_email_test.go
 │   │       ├── task_workflow.go
-│   │       └── task_workflow_test.go
+│   │       ├── task_workflow_test.go
+│   │       ├── workflow_vertex.go
+│   │       ├── workflow_vertex_test.go
+│   │       ├── workflow_edge.go
+│   │       └── workflow_edge_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
