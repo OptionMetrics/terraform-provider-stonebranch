@@ -1,0 +1,149 @@
+package provider
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+)
+
+func TestAccTaskUnixResource_basic(t *testing.T) {
+	rName := acctest.RandomWithPrefix("tf-test")
+	resourceName := "stonebranch_task_unix.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read
+			{
+				Config: testAccTaskUnixConfig_basic(rName),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "command", "echo hello"),
+					resource.TestCheckResourceAttrSet(resourceName, "sys_id"),
+					resource.TestCheckResourceAttrSet(resourceName, "version"),
+				),
+			},
+			// ImportState - use the task name as import ID
+			{
+				ResourceName:                         resourceName,
+				ImportState:                          true,
+				ImportStateVerify:                    true,
+				ImportStateId:                        rName,
+				ImportStateVerifyIdentifierAttribute: "name",
+			},
+			// Update
+			{
+				Config: testAccTaskUnixConfig_updated(rName),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "command", "echo updated"),
+					resource.TestCheckResourceAttr(resourceName, "summary", "Updated task summary"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccTaskUnixResource_withScript(t *testing.T) {
+	// This test creates a script resource and a Unix task that references it
+	scriptName := acctest.RandomWithPrefix("tf-test-script")
+	taskName := acctest.RandomWithPrefix("tf-test-task")
+	taskResourceName := "stonebranch_task_unix.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccTaskUnixConfig_withScript(taskName, scriptName),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(taskResourceName, "name", taskName),
+					resource.TestCheckResourceAttr(taskResourceName, "command_or_script", "Script"),
+					resource.TestCheckResourceAttr(taskResourceName, "script", scriptName),
+				),
+			},
+		},
+	})
+}
+
+func TestAccTaskUnixResource_withSummary(t *testing.T) {
+	rName := acctest.RandomWithPrefix("tf-test")
+	resourceName := "stonebranch_task_unix.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccTaskUnixConfig_withSummary(rName, "Initial summary"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "summary", "Initial summary"),
+				),
+			},
+			{
+				Config: testAccTaskUnixConfig_withSummary(rName, "Changed summary"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "summary", "Changed summary"),
+				),
+			},
+		},
+	})
+}
+
+// Test configuration helpers
+
+func testAccTaskUnixConfig_basic(name string) string {
+	return providerConfig() + fmt.Sprintf(`
+resource "stonebranch_task_unix" "test" {
+  name       = %[1]q
+  command    = "echo hello"
+  agent_var  = "agent_name"
+  exit_codes = "0"
+}
+`, name)
+}
+
+func testAccTaskUnixConfig_updated(name string) string {
+	return providerConfig() + fmt.Sprintf(`
+resource "stonebranch_task_unix" "test" {
+  name       = %[1]q
+  command    = "echo updated"
+  summary    = "Updated task summary"
+  agent_var  = "agent_name"
+  exit_codes = "0"
+}
+`, name)
+}
+
+func testAccTaskUnixConfig_withScript(taskName, scriptName string) string {
+	return providerConfig() + fmt.Sprintf(`
+resource "stonebranch_script" "test" {
+  name    = %[2]q
+  content = "echo 'Hello from script'"
+}
+
+resource "stonebranch_task_unix" "test" {
+  name              = %[1]q
+  command_or_script = "Script"
+  script            = stonebranch_script.test.name
+  agent_var         = "agent_name"
+  exit_codes        = "0"
+}
+`, taskName, scriptName)
+}
+
+func testAccTaskUnixConfig_withSummary(name, summary string) string {
+	return providerConfig() + fmt.Sprintf(`
+resource "stonebranch_task_unix" "test" {
+  name       = %[1]q
+  command    = "echo hello"
+  summary    = %[2]q
+  agent_var  = "agent_name"
+  exit_codes = "0"
+}
+`, name, summary)
+}

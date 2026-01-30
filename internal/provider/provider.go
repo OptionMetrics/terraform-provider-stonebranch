@@ -119,6 +119,7 @@ func (p *StonebranchProvider) Configure(ctx context.Context, req provider.Config
 func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewTaskUnixResource,
+		NewScriptResource,
 	}
 }
 

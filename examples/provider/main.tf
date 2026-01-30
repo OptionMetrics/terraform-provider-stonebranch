@@ -40,19 +40,27 @@ variable "agent_name" {
   default     = "DEV_UA_CLOUD_LINUX_UE1_02"
 }
 
-# Example: Task with script content instead of command
-# resource "stonebranch_task_unix" "script_example" {
-#   name              = "terraform-script-example"
-#   summary           = "Task that runs a script"
-#   command_or_script = "Script"
-#   script            = <<-EOT
-#     #!/bin/bash
-#     echo "Starting script..."
-#     date
-#     echo "Script completed"
-#   EOT
-#   agent = "your-agent-name"
-# }
+# Example: Script resource
+resource "stonebranch_script" "backup_script" {
+  name        = "terraform-backup-script"
+  description = "A backup script managed by Terraform"
+  content     = <<-EOT
+    #!/bin/bash
+    echo "Starting backup..."
+    date
+    echo "Backup completed"
+  EOT
+}
+
+# Example: Unix task that references a script resource
+resource "stonebranch_task_unix" "script_task" {
+  name              = "terraform-script-task"
+  summary           = "Task that runs a script resource"
+  command_or_script = "Script"
+  script            = stonebranch_script.backup_script.name
+  agent             = var.agent_name
+  exit_codes        = "0"
+}
 
 # Example: Task with retry configuration
 # resource "stonebranch_task_unix" "with_retry" {

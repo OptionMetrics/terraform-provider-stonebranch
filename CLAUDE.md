@@ -19,9 +19,12 @@ This is a custom Terraform provider for **StoneBranch Universal Controller**, bu
 ### Step 1: Project Scaffold (COMPLETE)
 
 1. **Go module setup** (`go.mod`)
-   - Go 1.23
-   - `terraform-plugin-framework` v1.13.0
-   - `terraform-plugin-log` v0.9.0
+   - Go 1.24
+   - `terraform-plugin-framework` v1.15.0
+   - `terraform-plugin-log` v0.10.0
+   - `terraform-plugin-testing` v1.14.0 (acceptance tests)
+   - `godotenv` v1.5.1 (.env file loading)
+   - `testify` v1.10.0 (assertions)
 
 2. **Main entry point** (`main.go`)
    - Provider server setup
@@ -73,6 +76,26 @@ Implemented `stonebranch_task_unix` resource in `internal/provider/resource_task
 
 4. **Design decision**: Each task type is a separate resource (e.g., `stonebranch_task_unix`, `stonebranch_task_windows`) rather than a single generic resource with a type field.
 
+### Step 2b: Script Resource (COMPLETE)
+
+Implemented `stonebranch_script` resource in `internal/provider/resource_script.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/script`
+   - Read via `GET /resources/script?scriptname=X`
+   - Update via `PUT /resources/script`
+   - Delete via `DELETE /resources/script?scriptid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Content: `script_type`, `content` (required)
+   - Optional: `description`, `resolve_variables`
+   - Business services: `opswise_groups`
+
+3. **Import support** via script name
+
+4. **Integration with tasks**: Unix tasks can reference scripts using `command_or_script = "Script"` and `script = stonebranch_script.my_script.name`
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -98,11 +121,12 @@ Implement read-only data sources for:
 - Listing agents/agent clusters
 - Querying task instances
 
-### Step 6: Testing & Documentation
+### Step 6: Testing & Documentation (COMPLETE)
 
-- Unit tests for client
-- Acceptance tests for resources
-- Generated documentation
+- Unit tests for client (`internal/client/client_test.go`)
+- Acceptance tests for resources (`internal/provider/resource_task_unix_test.go`)
+- .env file support for credentials (auto-loaded in tests via godotenv)
+- Generated documentation (to be done)
 
 ## API Patterns (from openapi.yaml)
 
@@ -154,13 +178,26 @@ TaskWsData (base)
 # Build
 make build
 
-# Test locally
-export STONEBRANCH_API_TOKEN="your-token"
+# Run unit tests (no API credentials needed)
+make test
+
+# Run only client unit tests
+make testunit
+
+# Run acceptance tests (requires API credentials)
+# Tests auto-load .env file via godotenv
+make testacc
+
+# Run acceptance tests for Unix task only
+make testacc-unix
+
+# Generate test coverage report
+make testcov
+
+# Test locally with Terraform
+export STONEBRANCH_API_TOKEN="your-token"  # Or use .env file
 export TF_CLI_CONFIG_FILE=./examples/dev.tfrc
 terraform -chdir=examples/provider plan
-
-# Run Go tests
-make test
 ```
 
 ## File Locations
@@ -169,7 +206,13 @@ make test
 |---------|------|
 | Provider config | `internal/provider/provider.go` |
 | API client | `internal/client/client.go` |
+| Client unit tests | `internal/client/client_test.go` |
 | Task Unix resource | `internal/provider/resource_task_unix.go` |
+| Task Unix tests | `internal/provider/resource_task_unix_test.go` |
+| Script resource | `internal/provider/resource_script.go` |
+| Script tests | `internal/provider/resource_script_test.go` |
+| Test config | `internal/provider/provider_test.go` |
 | Data sources | `internal/provider/datasource_*.go` (to be created) |
 | API spec | `openapi.yaml` |
 | Examples | `examples/` |
+| Environment template | `.env.example` |

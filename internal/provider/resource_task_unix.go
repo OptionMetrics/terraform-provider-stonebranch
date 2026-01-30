@@ -187,7 +187,7 @@ func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 			},
 			"script": schema.StringAttribute{
-				MarkdownDescription: "Script content (when command_or_script is 'Script').",
+				MarkdownDescription: "Name of the Script resource to execute (when command_or_script is 'Script').",
 				Optional:            true,
 			},
 			"runtime_dir": schema.StringAttribute{
@@ -217,6 +217,7 @@ func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaReques
 			"exit_code_processing": schema.StringAttribute{
 				MarkdownDescription: "How to process exit codes. Values: 'Success Exitcode Range', 'Failure Exitcode Range'.",
 				Optional:            true,
+				Computed:            true,
 			},
 
 			// Output handling
