@@ -5,19 +5,59 @@ A Terraform provider for managing resources in [StoneBranch Universal Controller
 ## Requirements
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
-- [Go](https://golang.org/doc/install) >= 1.23
 - A StoneBranch Universal Controller instance with API access
 - A valid API token with appropriate permissions
 
-## Building the Provider
+## Installation
+
+Download the latest release from [GitHub Releases](https://github.com/OptionMetrics/terraform-provider-stonebranch/releases) and install to your Terraform plugins directory.
+
+### macOS (Apple Silicon)
 
 ```bash
-git clone <repository-url>
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_arm64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_arm64/
+rm terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip
+```
+
+### macOS (Intel)
+
+```bash
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_amd64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_amd64/
+rm terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip
+```
+
+### Linux (x86_64)
+
+```bash
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_linux_amd64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_linux_amd64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/linux_amd64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/linux_amd64/
+rm terraform-provider-stonebranch_${VERSION}_linux_amd64.zip
+```
+
+## Building from Source
+
+Requires [Go](https://golang.org/doc/install) >= 1.24.
+
+```bash
+git clone https://github.com/OptionMetrics/terraform-provider-stonebranch.git
 cd terraform-provider-stonebranch
 make build
 ```
 
 This creates the `terraform-provider-stonebranch` binary in the project root.
+
+See [RELEASE.md](RELEASE.md) for the full release process.
 
 ## Local Development Setup
 

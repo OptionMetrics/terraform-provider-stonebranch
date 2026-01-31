@@ -133,26 +133,44 @@ terraform-provider-stonebranch_0.4.0_SHA256SUMS
 
 ## Using the Published Provider
 
-### Download from GitHub Releases
+### Step 1: Download and Install
 
-Download the appropriate zip for your platform from:
-https://github.com/OptionMetrics/terraform-provider-stonebranch/releases
-
-### Install Manually
+#### macOS (Apple Silicon)
 
 ```bash
-# Download (example for macOS ARM)
-curl -LO https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v0.4.0/terraform-provider-stonebranch_0.4.0_darwin_arm64.zip
-
-# Unzip
-unzip terraform-provider-stonebranch_0.4.0_darwin_arm64.zip
-
-# Install to plugin directory
-mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64
-mv terraform-provider-stonebranch_v0.4.0 ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64/
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_arm64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_arm64/
+rm terraform-provider-stonebranch_${VERSION}_darwin_arm64.zip
 ```
 
-### Configure Terraform
+#### macOS (Intel)
+
+```bash
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_amd64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/darwin_amd64/
+rm terraform-provider-stonebranch_${VERSION}_darwin_amd64.zip
+```
+
+#### Linux (x86_64)
+
+```bash
+VERSION=0.4.0
+curl -LO "https://github.com/OptionMetrics/terraform-provider-stonebranch/releases/download/v${VERSION}/terraform-provider-stonebranch_${VERSION}_linux_amd64.zip"
+unzip terraform-provider-stonebranch_${VERSION}_linux_amd64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/linux_amd64
+mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/${VERSION}/linux_amd64/
+rm terraform-provider-stonebranch_${VERSION}_linux_amd64.zip
+```
+
+### Step 2: Configure Terraform Project
+
+Create a `main.tf` file:
 
 ```hcl
 terraform {
@@ -163,7 +181,52 @@ terraform {
     }
   }
 }
+
+provider "stonebranch" {
+  # API token - can also use STONEBRANCH_API_TOKEN env var
+  api_token = var.stonebranch_api_token
+
+  # Base URL - can also use STONEBRANCH_BASE_URL env var
+  base_url = "https://your-instance.stonebranch.cloud"
+}
+
+variable "stonebranch_api_token" {
+  type      = string
+  sensitive = true
+}
 ```
+
+### Step 3: Initialize and Use
+
+```bash
+# Set your API token
+export STONEBRANCH_API_TOKEN="your-bearer-token"
+
+# Initialize Terraform (downloads provider from local plugin directory)
+terraform init
+
+# Plan changes
+terraform plan
+
+# Apply changes
+terraform apply
+```
+
+### Example: Create a Unix Task
+
+```hcl
+resource "stonebranch_task_unix" "hello" {
+  name    = "terraform-hello-world"
+  summary = "A simple task managed by Terraform"
+  command = "echo 'Hello from Terraform!'"
+  agent   = "your-linux-agent"
+}
+```
+
+### All Releases
+
+Browse all versions at:
+https://github.com/OptionMetrics/terraform-provider-stonebranch/releases
 
 ## Troubleshooting
 
