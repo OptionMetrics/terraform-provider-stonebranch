@@ -59,10 +59,13 @@ release:
 release-snapshot:
 	goreleaser release --clean --snapshot --skip=publish
 
-# Build and publish to Artifactory using goreleaser
-# Requires JFROG_USER and JFROG_PASSWORD env vars (or ARTIFACTORY_TOKEN)
-publish:
-	goreleaser release --clean
+# Build and publish to Artifactory
+# Uses jf CLI (authenticate first with 'jf login')
+publish: release
+	@echo "Publishing to Artifactory..."
+	@jf rt upload "dist/*.zip" "terraform-providers/stonebranch/stonebranch/$(VERSION)/" --flat
+	@jf rt upload "dist/*SHA256SUMS" "terraform-providers/stonebranch/stonebranch/$(VERSION)/" --flat
+	@echo "Published version $(VERSION) to Artifactory"
 
 # Create a new version tag (usage: make tag V=0.3.0)
 tag:
