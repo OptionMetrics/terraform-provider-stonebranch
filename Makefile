@@ -59,12 +59,19 @@ release:
 release-snapshot:
 	goreleaser release --clean --snapshot --skip=publish
 
-# Build and publish to Artifactory
+# Build and publish to Artifactory (filesystem mirror structure)
 # Uses jf CLI (authenticate first with 'jf login')
+# Structure: registry.terraform.io/stonebranch/stonebranch/{version}/{os}_{arch}/
+REGISTRY_PATH = terraform-providers/registry.terraform.io/stonebranch/stonebranch
+
 publish: release
 	@echo "Publishing to Artifactory..."
-	@jf rt upload "dist/*.zip" "terraform-providers/stonebranch/stonebranch/$(VERSION)/" --flat
-	@jf rt upload "dist/*SHA256SUMS" "terraform-providers/stonebranch/stonebranch/$(VERSION)/" --flat
+	@for zip in dist/terraform-provider-stonebranch_$(VERSION)_*.zip; do \
+		platform=$$(basename $$zip .zip | sed 's/terraform-provider-stonebranch_$(VERSION)_//'); \
+		echo "Uploading $$platform..."; \
+		jf rt upload "$$zip" "$(REGISTRY_PATH)/$(VERSION)/$$platform/" --flat; \
+	done
+	@jf rt upload "dist/*SHA256SUMS" "$(REGISTRY_PATH)/$(VERSION)/" --flat
 	@echo "Published version $(VERSION) to Artifactory"
 
 # Create a new version tag (usage: make tag V=0.3.0)

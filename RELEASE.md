@@ -8,212 +8,266 @@ This document describes how to build and publish the Terraform Provider for Ston
 
 - [Go](https://golang.org/doc/install) >= 1.24
 - [GoReleaser](https://goreleaser.com/install/) >= 2.0
-- [JFrog CLI](https://jfrog.com/getcli/) (optional, for manual uploads)
+- [JFrog CLI](https://jfrog.com/getcli/) (required for publishing)
 
-Install GoReleaser:
+Install on macOS:
 
 ```bash
 brew install goreleaser
+brew install jfrog-cli
 ```
 
-### JFrog Artifactory Access
+### JFrog Artifactory Authentication
 
-You need credentials for the JFrog Artifactory instance at `https://optionmetrics.jfrog.io`.
-
-Configure JFrog CLI (for manual operations):
+The publish process uses JFrog CLI for uploads. Authenticate before publishing:
 
 ```bash
-jf config add optionmetrics \
-  --url=https://optionmetrics.jfrog.io \
-  --user=your-username \
-  --interactive
+jf login
+```
+
+This opens a browser for authentication. Once complete, your credentials are stored and used automatically for uploads.
+
+To verify your authentication:
+
+```bash
+jf config show
 ```
 
 ## Versioning
 
 This project uses [Semantic Versioning](https://semver.org/) via git tags. The version is automatically derived from the latest git tag.
 
-```bash
-# Check current version
-make version
-
-# Create a new version tag
-make tag V=0.3.0
-
-# Push the tag to remote
-git push origin v0.3.0
-```
-
 ### Version Format
 
 - Tags must follow the format `v{major}.{minor}.{patch}` (e.g., `v0.3.0`)
-- The `v` prefix is stripped when creating release artifacts
+- The `v` prefix is stripped when creating release artifacts (e.g., `v0.3.0` → `0.3.0`)
 - Without a tag, the version defaults to `0.0.0-dev`
 
-## Building Releases
-
-### Snapshot Build (Testing)
-
-Build without publishing, no tag required:
+### Check Current Version
 
 ```bash
-make release-snapshot
+make version
 ```
 
-This creates artifacts in `dist/` with a `-dev` suffix.
+## Complete Release Workflow
 
-### Release Build (No Publish)
+### Step 1: Ensure Clean Git State
 
-Build release artifacts from the current tag:
+**Important:** GoReleaser requires a clean git state. All changes must be committed before creating a tag.
 
 ```bash
-make release
+# Check for uncommitted changes
+git status
+
+# If there are changes, commit them
+git add .
+git commit -m "Your commit message"
 ```
 
-### Build Artifacts
+### Step 2: Create Version Tag
 
-GoReleaser creates the following in `dist/`:
-
-```
-dist/
-├── terraform-provider-stonebranch_0.3.0_darwin_amd64.zip
-├── terraform-provider-stonebranch_0.3.0_darwin_arm64.zip
-├── terraform-provider-stonebranch_0.3.0_linux_amd64.zip
-├── terraform-provider-stonebranch_0.3.0_linux_arm64.zip
-├── terraform-provider-stonebranch_0.3.0_windows_amd64.zip
-└── terraform-provider-stonebranch_0.3.0_SHA256SUMS
-```
-
-## Publishing to Artifactory
-
-### Authentication
-
-Set environment variables before publishing:
+Only create the tag after ALL changes are committed:
 
 ```bash
-# Option 1: Username and password/token
-export JFROG_USER=your-username
-export JFROG_PASSWORD=your-api-key
-
-# Option 2: Access token
-export ARTIFACTORY_TOKEN=your-access-token
+make tag V=0.4.0
 ```
 
-You can add these to a `.env` file (gitignored) or your shell profile.
+This creates an annotated tag `v0.4.0` at the current commit.
 
-### Publish Command
+### Step 3: Authenticate with JFrog
 
-Build and publish to Artifactory:
+If you haven't already authenticated (or your session expired):
+
+```bash
+jf login
+```
+
+### Step 4: Build and Publish
 
 ```bash
 make publish
 ```
 
 This will:
-1. Build binaries for all platforms (darwin, linux, windows)
+1. Build binaries for all platforms using GoReleaser
 2. Create zip archives with proper naming
 3. Generate SHA256 checksums
-4. Upload all artifacts to Artifactory
+4. Upload all artifacts to Artifactory using `jf` CLI
 
-### Artifactory Location
+### Step 5: Push to Remote
 
-Artifacts are published to:
-
-```
-https://optionmetrics.jfrog.io/artifactory/terraform-providers/stonebranch/stonebranch/{version}/
-```
-
-### Verify Upload
+After successful publish, push commits and tag to GitHub:
 
 ```bash
-# Using JFrog CLI
-jf rt search "terraform-providers/stonebranch/stonebranch/*"
-
-# Or check a specific version
-jf rt search "terraform-providers/stonebranch/stonebranch/0.3.0/"
+git push origin main
+git push origin v0.4.0
 ```
 
-## Complete Release Workflow
+### Step 6: Verify Upload
 
 ```bash
-# 1. Ensure all changes are committed
-git status
+jf rt search "terraform-providers/stonebranch/stonebranch/0.4.0/"
+```
 
-# 2. Run tests
-make testacc
+## Quick Reference
 
-# 3. Create and push version tag
-make tag V=0.3.0
-git push origin v0.3.0
+```bash
+# Full release workflow (copy-paste version)
+git status                          # Ensure clean state
+git add . && git commit -m "msg"    # Commit any changes (if needed)
+make tag V=0.4.0                    # Create version tag
+jf login                            # Authenticate (if needed)
+make publish                        # Build and upload
+git push origin main                # Push commits
+git push origin v0.4.0              # Push tag
+```
 
-# 4. Set credentials
-export JFROG_USER=your-username
-export JFROG_PASSWORD=your-api-key
+## Build Commands
 
-# 5. Build and publish
-make publish
+| Command | Description |
+|---------|-------------|
+| `make version` | Show current version from git tag |
+| `make release-snapshot` | Build without tag (for testing) |
+| `make release` | Build release artifacts (no upload) |
+| `make publish` | Build and upload to Artifactory |
+| `make tag V=x.y.z` | Create new version tag |
 
-# 6. Verify
-jf rt search "terraform-providers/stonebranch/stonebranch/0.3.0/"
+## Build Artifacts
+
+GoReleaser creates the following in `dist/`:
+
+```
+dist/
+├── terraform-provider-stonebranch_0.4.0_darwin_amd64.zip
+├── terraform-provider-stonebranch_0.4.0_darwin_arm64.zip
+├── terraform-provider-stonebranch_0.4.0_linux_amd64.zip
+├── terraform-provider-stonebranch_0.4.0_linux_arm64.zip
+├── terraform-provider-stonebranch_0.4.0_windows_amd64.zip
+└── terraform-provider-stonebranch_0.4.0_SHA256SUMS
+```
+
+## Artifactory Location
+
+Artifacts are published using Terraform filesystem mirror structure:
+
+```
+terraform-providers/registry.terraform.io/stonebranch/stonebranch/{version}/{os}_{arch}/
+    terraform-provider-stonebranch_{version}_{os}_{arch}.zip
+```
+
+Example:
+```
+terraform-providers/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64/
+    terraform-provider-stonebranch_0.4.0_darwin_arm64.zip
 ```
 
 ## Using the Published Provider
 
-### Configure Terraform
+### Option 1: Filesystem Mirror (Recommended)
 
-Add to `~/.terraformrc` or project `.terraformrc`:
+Download the provider tree and configure Terraform to use it:
+
+```bash
+# Create local mirror directory
+mkdir -p ~/terraform-providers
+
+# Download all versions (or specific version)
+jf rt download "terraform-providers/registry.terraform.io/" ~/terraform-providers/ --flat=false
+```
+
+Configure `~/.terraformrc`:
 
 ```hcl
 provider_installation {
+  filesystem_mirror {
+    path    = "/Users/yourname/terraform-providers"
+    include = ["registry.terraform.io/stonebranch/stonebranch"]
+  }
+
   direct {
     exclude = ["registry.terraform.io/stonebranch/stonebranch"]
   }
-
-  filesystem_mirror {
-    path    = "/path/to/local/providers"
-    include = ["registry.terraform.io/stonebranch/stonebranch"]
-  }
 }
 ```
 
-Or if Artifactory is configured as a Terraform registry:
+Then in your Terraform config:
 
 ```hcl
-provider_installation {
-  network_mirror {
-    url = "https://optionmetrics.jfrog.io/artifactory/api/terraform/terraform-providers/"
+terraform {
+  required_providers {
+    stonebranch = {
+      source  = "registry.terraform.io/stonebranch/stonebranch"
+      version = "0.4.0"
+    }
   }
 }
 ```
 
-### Download Manually
+### Option 2: Download Manually
 
 ```bash
-# Download a specific version
-curl -u $JFROG_USER:$JFROG_PASSWORD -O \
-  "https://optionmetrics.jfrog.io/artifactory/terraform-providers/stonebranch/stonebranch/0.3.0/terraform-provider-stonebranch_0.3.0_darwin_arm64.zip"
+# Download specific platform
+jf rt download \
+  "terraform-providers/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64/*.zip" \
+  ./
+
+# Unzip and install to plugin cache
+unzip terraform-provider-stonebranch_0.4.0_darwin_arm64.zip
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64
+mv terraform-provider-stonebranch_v0.4.0 \
+  ~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.4.0/darwin_arm64/
 ```
-
-## Configuration Files
-
-| File | Purpose |
-|------|---------|
-| `.goreleaser.yaml` | GoReleaser build and publish configuration |
-| `Makefile` | Build automation targets |
-| `dist/` | Build output directory (gitignored) |
 
 ## Troubleshooting
 
+### "git is in a dirty state"
+
+GoReleaser requires all changes to be committed before building a release.
+
+```bash
+# Check what's dirty
+git status
+
+# Commit changes
+git add .
+git commit -m "message"
+
+# Recreate tag at new commit
+git tag -d v0.4.0
+make tag V=0.4.0
+```
+
+### "tag was not made against commit"
+
+The tag points to a different commit than HEAD. Recreate the tag:
+
+```bash
+git tag -d v0.4.0
+make tag V=0.4.0
+```
+
+### Tag Already Exists on Remote
+
+If you need to update a tag that's already pushed:
+
+```bash
+git push origin v0.4.0 --force
+```
+
+**Warning:** Only force-push tags if the release hasn't been used by others.
+
 ### Authentication Errors (401)
 
-- Verify `JFROG_USER` and `JFROG_PASSWORD` are set correctly
-- Check that your API key/token hasn't expired
-- Ensure you have write permissions to the `terraform-providers` repository
+Re-authenticate with JFrog:
+
+```bash
+jf login
+```
 
 ### Repository Not Found (404/405)
 
 - Verify the repository `terraform-providers` exists in Artifactory
-- Check you have the correct repository type (Generic or Terraform)
+- Check you have write permissions
 
 ### Build Failures
 
@@ -225,15 +279,10 @@ goreleaser check
 goreleaser release --clean --snapshot --skip=publish --debug
 ```
 
-### Version Issues
+## Configuration Files
 
-```bash
-# List all tags
-git tag -l
-
-# Ensure tag is pushed
-git push origin --tags
-
-# Check current version
-make version
-```
+| File | Purpose |
+|------|---------|
+| `.goreleaser.yaml` | GoReleaser build configuration |
+| `Makefile` | Build automation targets |
+| `dist/` | Build output directory (gitignored) |
