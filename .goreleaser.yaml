@@ -49,6 +49,10 @@ changelog:
       - Merge pull request
       - Merge branch
 
+# Disable GitHub/GitLab releases (we publish to Artifactory instead)
+release:
+  disable: true
+
 # Upload to JFrog Artifactory
 uploads:
   - name: artifactory
@@ -58,7 +62,7 @@ uploads:
     # Authentication via JFROG_USER and JFROG_PASSWORD env vars
     # Or ARTIFACTORY_TOKEN env var
 
-# Optionally create GitHub releases (uncomment if using GitHub)
+# Optionally create GitHub releases (set disable: false and configure)
 # release:
 #   github:
 #     owner: your-org
