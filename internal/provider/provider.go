@@ -138,6 +138,7 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 		resources.NewBusinessServiceResource,
 		resources.NewTriggerFileMonitorResource,
 		resources.NewTaskFileMonitorResource,
+		resources.NewCalendarResource,
 	}
 }
 

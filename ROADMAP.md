@@ -28,10 +28,16 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_business_service` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_trigger_file_monitor` | ✅ Complete | ✅ | ❌ |
 | `stonebranch_task_file_monitor` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_calendar` | ✅ Complete | ✅ | ❌ |
 
 ### Implemented Data Sources
 
-None yet.
+| Data Source | Status | Tests | Docs |
+|-------------|--------|-------|------|
+| `stonebranch_agents` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_agent_clusters` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_tasks` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_instances` | ✅ Complete | ✅ | ✅ |
 
 ---
 
@@ -127,14 +133,14 @@ Resources for advanced scheduling with business calendars.
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
-| `stonebranch_calendar` | Business calendars | P0 | 🔲 Not Started |
+| `stonebranch_calendar` | Business calendars | P0 | ✅ Complete |
 | `stonebranch_custom_day` | Holiday/special day definitions | P1 | 🔲 Not Started |
 
 ### Deliverables
-- [ ] `stonebranch_calendar` resource with full CRUD
+- [x] `stonebranch_calendar` resource with full CRUD
 - [ ] `stonebranch_custom_day` resource with full CRUD
-- [ ] Calendar integration with triggers
-- [ ] Acceptance tests for all resources
+- [x] Calendar integration with triggers
+- [x] Acceptance tests for calendar resource
 
 ---
 
@@ -153,14 +159,13 @@ Resources for managing execution infrastructure.
 
 | Data Source | Description | Priority | Status |
 |-------------|-------------|----------|--------|
-| `stonebranch_agent` | Look up agent details | P0 | 🔲 Not Started |
-| `stonebranch_agents` | List/filter agents | P1 | 🔲 Not Started |
-| `stonebranch_agent_cluster` | Look up cluster details | P1 | 🔲 Not Started |
+| `stonebranch_agents` | List/filter agents | P0 | ✅ Complete |
+| `stonebranch_agent_clusters` | List/filter agent clusters | P1 | ✅ Complete |
 
 ### Deliverables
 - [ ] `stonebranch_agent_cluster` resource with full CRUD
-- [ ] Agent data sources for lookups
-- [ ] Acceptance tests for all resources
+- [x] Agent data sources for lookups
+- [x] Acceptance tests for data sources
 
 ---
 
@@ -290,28 +295,30 @@ Resources for enterprise system integrations.
 
 ---
 
-## Phase 9: Data Sources
+## Phase 9: Data Sources (PARTIALLY COMPLETE)
 
 Read-only data sources for querying existing resources.
 
 | Data Source | Description | Priority | Status |
 |-------------|-------------|----------|--------|
-| `stonebranch_task` | Look up any task by name | P0 | 🔲 Not Started |
-| `stonebranch_tasks` | List/filter tasks | P1 | 🔲 Not Started |
+| `stonebranch_agents` | List/filter agents | P0 | ✅ Complete |
+| `stonebranch_agent_clusters` | List/filter agent clusters | P1 | ✅ Complete |
+| `stonebranch_tasks` | List/filter tasks | P0 | ✅ Complete |
+| `stonebranch_task_instances` | Query task instances | P1 | ✅ Complete |
+| `stonebranch_task` | Look up any task by name | P1 | 🔲 Not Started |
 | `stonebranch_trigger` | Look up trigger by name | P1 | 🔲 Not Started |
 | `stonebranch_triggers` | List/filter triggers | P2 | 🔲 Not Started |
-| `stonebranch_credential` | Look up credential | P1 | 🔲 Not Started |
-| `stonebranch_script` | Look up script | P1 | 🔲 Not Started |
-| `stonebranch_calendar` | Look up calendar | P1 | 🔲 Not Started |
+| `stonebranch_credential` | Look up credential | P2 | 🔲 Not Started |
+| `stonebranch_script` | Look up script | P2 | 🔲 Not Started |
+| `stonebranch_calendar` | Look up calendar | P2 | 🔲 Not Started |
 | `stonebranch_business_service` | Look up business service | P2 | 🔲 Not Started |
-| `stonebranch_variable` | Look up variable | P1 | 🔲 Not Started |
+| `stonebranch_variable` | Look up variable | P2 | 🔲 Not Started |
 | `stonebranch_database_connection` | Look up DB connection | P2 | 🔲 Not Started |
-| `stonebranch_task_instance` | Query task instances | P2 | 🔲 Not Started |
 
 ### Deliverables
 - [ ] Single-resource data sources (lookup by name)
-- [ ] List data sources with filtering
-- [ ] Acceptance tests for all data sources
+- [x] List data sources with filtering (agents, agent_clusters, tasks, task_instances)
+- [x] Acceptance tests for implemented data sources
 
 ---
 
@@ -401,6 +408,11 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_business_service` | ✅ Acceptance tests |
 | `stonebranch_trigger_file_monitor` | ✅ Acceptance tests |
 | `stonebranch_task_file_monitor` | ✅ Acceptance tests |
+| `stonebranch_agents` (data source) | ✅ Acceptance tests |
+| `stonebranch_agent_clusters` (data source) | ✅ Acceptance tests |
+| `stonebranch_tasks` (data source) | ✅ Acceptance tests |
+| `stonebranch_task_instances` (data source) | ✅ Acceptance tests |
+| `stonebranch_calendar` | ✅ Acceptance tests |
 
 ---
 
@@ -467,9 +479,9 @@ docs/
 | Task Types | 20 | 8 |
 | Trigger Types | 12 | 3 |
 | Connection Types | 5 | 2 |
-| Supporting Resources | 15 | 7 |
-| Data Sources | 11 | 0 |
-| **Total** | **63** | **20** |
+| Supporting Resources | 15 | 8 |
+| Data Sources | 13 | 4 |
+| **Total** | **65** | **25** |
 
 ### Priority Breakdown
 
@@ -546,19 +558,22 @@ docs/
 - [ ] Virtual resources
 
 ### v0.4.0 - Scheduling
-- [ ] Calendar resource
+- [x] Calendar resource
 - [ ] Custom day resource
-- [ ] Cron trigger
+- [x] Cron trigger
 
 ### v0.5.0 - Infrastructure
 - [ ] Agent cluster resource
 - [ ] Agent data sources
 - [x] Business service resource
 
-### v0.6.0 - Data Sources
-- [ ] Task data sources
+### v0.6.0 - Data Sources (IN PROGRESS)
+- [x] `stonebranch_agents` data source
+- [x] `stonebranch_agent_clusters` data source
+- [x] `stonebranch_tasks` data source
+- [x] `stonebranch_task_instances` data source
 - [ ] Trigger data sources
-- [ ] General lookup data sources
+- [ ] Single-resource lookup data sources
 
 ### v1.0.0 - Production Ready
 - [ ] All P0 and P1 resources

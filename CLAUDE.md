@@ -391,6 +391,31 @@ Implemented `stonebranch_task_file_monitor` resource in `internal/provider/resou
 
 4. **Usage**: File monitor tasks are used by file monitor triggers (`task_monitor` field) to detect file events.
 
+### Step 2p: Calendar Resource (COMPLETE)
+
+Implemented `stonebranch_calendar` resource in `internal/provider/resources/calendar.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/calendar`
+   - Read via `GET /resources/calendar?calendarname=X`
+   - Update via `PUT /resources/calendar`
+   - Delete via `DELETE /resources/calendar?calendarid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `comments`
+   - Business days: `business_days` (comma-separated: "Monday,Tuesday,..."), `first_day_of_week`
+   - Quarters (all required by API): `first_quarter_month`, `first_quarter_day`, `second_quarter_month`, `second_quarter_day`, `third_quarter_month`, `third_quarter_day`, `fourth_quarter_month`, `fourth_quarter_day`
+   - Business services: `opswise_groups`
+
+3. **Import support** via calendar name
+
+4. **Notes**:
+   - The API requires all four quarter start dates to be provided
+   - Month values use three-letter abbreviations: "Jan", "Feb", "Mar", etc.
+   - Business days use capitalized full names: "Monday", "Tuesday", etc.
+   - Calendars are referenced by triggers via the `calendar` attribute
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -614,6 +639,8 @@ terraform -chdir=examples/provider plan
 | File Monitor Trigger tests | `internal/provider/resources/trigger_filemonitor_test.go` |
 | File Monitor Task resource | `internal/provider/resources/task_file_monitor.go` |
 | File Monitor Task tests | `internal/provider/resources/task_file_monitor_test.go` |
+| Calendar resource | `internal/provider/resources/calendar.go` |
+| Calendar tests | `internal/provider/resources/calendar_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Agents data source | `internal/provider/data_sources/agents.go` |
 | Agents data source tests | `internal/provider/data_sources/agents_test.go` |
@@ -680,7 +707,9 @@ terraform-provider-stonebranch/
 │   │   │   ├── trigger_filemonitor.go
 │   │   │   ├── trigger_filemonitor_test.go
 │   │   │   ├── task_file_monitor.go
-│   │   │   └── task_file_monitor_test.go
+│   │   │   ├── task_file_monitor_test.go
+│   │   │   ├── calendar.go
+│   │   │   └── calendar_test.go
 │   │   └── data_sources/            # Data source implementations
 │   │       ├── agents.go
 │   │       ├── agents_test.go
