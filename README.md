@@ -416,11 +416,18 @@ terraform-provider-stonebranch/
 ### Useful Commands
 
 ```bash
-make build      # Build the provider binary
-make test       # Run tests
-make fmt        # Format Go code
-make clean      # Remove built binary
+make build            # Build the provider binary
+make test             # Run tests
+make testacc          # Run acceptance tests (requires API credentials)
+make fmt              # Format Go code
+make clean            # Remove built binary
+make release-snapshot # Build release artifacts (no tag required)
+make publish          # Build and publish to Artifactory
 ```
+
+### Releasing
+
+See [RELEASE.md](RELEASE.md) for the complete release and publishing process.
 
 ### Running Tests
 

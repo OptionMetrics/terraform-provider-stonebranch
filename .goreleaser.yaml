@@ -1,0 +1,80 @@
+# GoReleaser configuration for terraform-provider-stonebranch
+# Documentation: https://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: terraform-provider-stonebranch
+    binary: terraform-provider-stonebranch_v{{ .Version }}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+
+archives:
+  - id: zip
+    formats:
+      - zip
+    name_template: "terraform-provider-stonebranch_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "terraform-provider-stonebranch_{{ .Version }}_SHA256SUMS"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-dev"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+# Upload to JFrog Artifactory
+uploads:
+  - name: artifactory
+    target: https://optionmetrics.jfrog.io/artifactory/terraform-providers/stonebranch/stonebranch/{{ .Version }}/
+    method: PUT
+    mode: archive
+    # Authentication via JFROG_USER and JFROG_PASSWORD env vars
+    # Or ARTIFACTORY_TOKEN env var
+
+# Optionally create GitHub releases (uncomment if using GitHub)
+# release:
+#   github:
+#     owner: your-org
+#     name: terraform-provider-stonebranch
+#   draft: true
+#   prerelease: auto
+
+# Signs the checksum file (optional, uncomment to enable)
+# signs:
+#   - artifacts: checksum
+#     cmd: gpg
+#     args:
+#       - "--batch"
+#       - "--local-user"
+#       - "{{ .Env.GPG_FINGERPRINT }}"
+#       - "--output"
+#       - "${signature}"
+#       - "--detach-sign"
+#       - "${artifact}"

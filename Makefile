@@ -1,7 +1,10 @@
-.PHONY: build install test testunit testacc testcov clean fmt lint dev
+.PHONY: build install test testunit testacc testcov clean fmt lint dev release release-snapshot publish tag version
 
 BINARY_NAME=terraform-provider-stonebranch
 INSTALL_PATH=~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.1.0/darwin_arm64
+
+# Version from git tag (strips leading 'v'), fallback to 0.0.0-dev
+VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0-dev")
 
 build:
 	go build -o $(BINARY_NAME)
@@ -35,6 +38,7 @@ testcov:
 clean:
 	rm -f $(BINARY_NAME)
 	rm -f coverage.out coverage.html
+	rm -rf dist/
 	go clean
 
 fmt:
@@ -46,3 +50,27 @@ lint:
 # Run terraform with dev overrides
 dev:
 	TF_CLI_CONFIG_FILE=./examples/dev.tfrc terraform -chdir=examples/provider $(ARGS)
+
+# Build release binaries using goreleaser (dry-run, no publish)
+release:
+	goreleaser release --clean --skip=publish
+
+# Build snapshot release (no tag required, for testing)
+release-snapshot:
+	goreleaser release --clean --snapshot --skip=publish
+
+# Build and publish to Artifactory using goreleaser
+# Requires JFROG_USER and JFROG_PASSWORD env vars (or ARTIFACTORY_TOKEN)
+publish:
+	goreleaser release --clean
+
+# Create a new version tag (usage: make tag V=0.3.0)
+tag:
+	@if [ -z "$(V)" ]; then echo "Usage: make tag V=0.3.0"; exit 1; fi
+	@echo "Creating tag v$(V)..."
+	git tag -a "v$(V)" -m "Release v$(V)"
+	@echo "Tag v$(V) created. Push with: git push origin v$(V)"
+
+# Show current version
+version:
+	@echo $(VERSION)
