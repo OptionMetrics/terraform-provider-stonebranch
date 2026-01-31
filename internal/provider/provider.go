@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"terraform-provider-stonebranch/internal/client"
+	"terraform-provider-stonebranch/internal/provider/data_sources"
 	"terraform-provider-stonebranch/internal/provider/resources"
 )
 
@@ -142,6 +143,9 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 
 func (p *StonebranchProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		// Data sources will be added here as we implement them
+		data_sources.NewAgentsDataSource,
+		data_sources.NewAgentClustersDataSource,
+		data_sources.NewTasksDataSource,
+		data_sources.NewTaskInstancesDataSource,
 	}
 }
