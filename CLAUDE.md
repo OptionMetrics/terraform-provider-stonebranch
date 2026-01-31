@@ -415,12 +415,80 @@ Each task type should be a separate resource:
 - Additional triggers/schedules
 - Agent clusters
 
-### Step 5: Data Sources
+### Step 5: Data Sources (COMPLETE)
 
-Implement read-only data sources for:
-- Looking up existing tasks by name
-- Listing agents/agent clusters
-- Querying task instances
+Implemented read-only data sources in `internal/provider/data_sources/`:
+
+#### 5a: Agents Data Source
+
+Implemented `stonebranch_agents` data source in `internal/provider/data_sources/agents.go`:
+
+1. **Read operation** via `GET /resources/agent/listadv`
+
+2. **Filter attributes** (all optional)
+   - `name` - Filter by agent name (supports wildcards)
+   - `type` - Filter by type: `Windows`, `Linux/Unix`, `z/OS`
+   - `business_services` - Filter by business service name
+
+3. **Output attributes** (computed list `agents`)
+   - `sys_id`, `name`, `description`, `type`
+   - `host_name`, `ip_address`, `status`, `version`
+   - `os`, `os_release`, `cpu_load`
+   - `suspended`, `decommissioned`, `opswise_groups`
+
+#### 5b: Agent Clusters Data Source
+
+Implemented `stonebranch_agent_clusters` data source in `internal/provider/data_sources/agent_clusters.go`:
+
+1. **Read operation** via `GET /resources/agentcluster/listadv`
+
+2. **Filter attributes** (all optional)
+   - `name` - Filter by cluster name
+   - `type` - Filter by type: `Windows`, `Linux/Unix`
+   - `business_services` - Filter by business service name
+
+3. **Output attributes** (computed list `agent_clusters`)
+   - `sys_id`, `name`, `description`, `type`, `version`
+   - `distribution`, `suspended`, `limit_type`, `limit_amount`, `opswise_groups`
+
+#### 5c: Tasks Data Source
+
+Implemented `stonebranch_tasks` data source in `internal/provider/data_sources/tasks.go`:
+
+1. **Read operation** via `GET /resources/task/listadv`
+
+2. **Filter attributes** (all optional)
+   - `name` - Filter by task name (supports wildcards)
+   - `type` - Filter by task type
+   - `agent_name` - Filter by assigned agent
+   - `business_services` - Filter by business service name
+   - `workflow_name` - Filter by workflow membership
+
+3. **Output attributes** (computed list `tasks`)
+   - `sys_id`, `name`, `type`, `summary`, `version`
+   - `agent`, `agent_cluster`, `credentials`, `opswise_groups`
+
+#### 5d: Task Instances Data Source
+
+Implemented `stonebranch_task_instances` data source in `internal/provider/data_sources/task_instances.go`:
+
+1. **Read operation** via `POST /resources/taskinstance/listadv`
+
+2. **Filter attributes**
+   - `task_name` - **Required** (use `*` for wildcard)
+   - `status` - Filter by status (Running, Success, Failed, etc.)
+   - `type` - Filter by task type
+   - `agent_name` - Filter by agent
+   - `updated_time_type` - Time filter: `Today`, `Offset`, `Since`, `Older Than`
+   - `updated_time` - Time value (e.g., `1h`, `30mn`, `2d`)
+   - `workflow_instance_name` - Filter by workflow instance
+   - `business_services` - Filter by business service
+
+3. **Output attributes** (computed list `task_instances`)
+   - `sys_id`, `name`, `type`, `status`, `status_description`
+   - `trigger_time`, `start_time`, `end_time`, `exit_code`
+   - `agent`, `task_name`, `task_id`, `instance_number`
+   - `triggered_by`, `workflow_instance_name`, `workflow_definition_name`
 
 ### Step 6: Testing & Documentation (COMPLETE)
 
@@ -547,9 +615,17 @@ terraform -chdir=examples/provider plan
 | File Monitor Task resource | `internal/provider/resources/task_file_monitor.go` |
 | File Monitor Task tests | `internal/provider/resources/task_file_monitor_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
-| Data sources | `internal/provider/data_sources/*.go` (to be created) |
+| Agents data source | `internal/provider/data_sources/agents.go` |
+| Agents data source tests | `internal/provider/data_sources/agents_test.go` |
+| Agent Clusters data source | `internal/provider/data_sources/agent_clusters.go` |
+| Agent Clusters data source tests | `internal/provider/data_sources/agent_clusters_test.go` |
+| Tasks data source | `internal/provider/data_sources/tasks.go` |
+| Tasks data source tests | `internal/provider/data_sources/tasks_test.go` |
+| Task Instances data source | `internal/provider/data_sources/task_instances.go` |
+| Task Instances data source tests | `internal/provider/data_sources/task_instances_test.go` |
 | API spec | `openapi.yaml` |
-| Examples | `examples/` |
+| Resource examples | `examples/resources/` |
+| Data source examples | `examples/data-sources/` |
 | Environment template | `.env.example` |
 
 ## Important: Go File Naming Convention
@@ -567,50 +643,61 @@ terraform-provider-stonebranch/
 ├── internal/
 │   ├── provider/
 │   │   ├── provider.go              # Provider configuration
-│   │   └── resources/               # Resource implementations
-│   │       ├── helpers.go           # Shared helper functions
-│   │       ├── task_unix.go
-│   │       ├── task_unix_test.go
-│   │       ├── taskwindows.go
-│   │       ├── taskwindows_test.go
-│   │       ├── task_file_transfer.go
-│   │       ├── task_file_transfer_test.go
-│   │       ├── script.go
-│   │       ├── script_test.go
-│   │       ├── trigger_time.go
-│   │       ├── trigger_time_test.go
-│   │       ├── trigger_cron.go
-│   │       ├── trigger_cron_test.go
-│   │       ├── credential.go
-│   │       ├── credential_test.go
-│   │       ├── variable.go
-│   │       ├── variable_test.go
-│   │       ├── database_connection.go
-│   │       ├── database_connection_test.go
-│   │       ├── email_connection.go
-│   │       ├── email_connection_test.go
-│   │       ├── task_sql.go
-│   │       ├── task_sql_test.go
-│   │       ├── task_email.go
-│   │       ├── task_email_test.go
-│   │       ├── task_workflow.go
-│   │       ├── task_workflow_test.go
-│   │       ├── workflow_vertex.go
-│   │       ├── workflow_vertex_test.go
-│   │       ├── workflow_edge.go
-│   │       ├── workflow_edge_test.go
-│   │       ├── business_service.go
-│   │       ├── business_service_test.go
-│   │       ├── trigger_filemonitor.go
-│   │       ├── trigger_filemonitor_test.go
-│   │       ├── task_file_monitor.go
-│   │       └── task_file_monitor_test.go
+│   │   ├── resources/               # Resource implementations
+│   │   │   ├── helpers.go           # Shared helper functions
+│   │   │   ├── task_unix.go
+│   │   │   ├── task_unix_test.go
+│   │   │   ├── taskwindows.go
+│   │   │   ├── taskwindows_test.go
+│   │   │   ├── task_file_transfer.go
+│   │   │   ├── task_file_transfer_test.go
+│   │   │   ├── script.go
+│   │   │   ├── script_test.go
+│   │   │   ├── trigger_time.go
+│   │   │   ├── trigger_time_test.go
+│   │   │   ├── trigger_cron.go
+│   │   │   ├── trigger_cron_test.go
+│   │   │   ├── credential.go
+│   │   │   ├── credential_test.go
+│   │   │   ├── variable.go
+│   │   │   ├── variable_test.go
+│   │   │   ├── database_connection.go
+│   │   │   ├── database_connection_test.go
+│   │   │   ├── email_connection.go
+│   │   │   ├── email_connection_test.go
+│   │   │   ├── task_sql.go
+│   │   │   ├── task_sql_test.go
+│   │   │   ├── task_email.go
+│   │   │   ├── task_email_test.go
+│   │   │   ├── task_workflow.go
+│   │   │   ├── task_workflow_test.go
+│   │   │   ├── workflow_vertex.go
+│   │   │   ├── workflow_vertex_test.go
+│   │   │   ├── workflow_edge.go
+│   │   │   ├── workflow_edge_test.go
+│   │   │   ├── business_service.go
+│   │   │   ├── business_service_test.go
+│   │   │   ├── trigger_filemonitor.go
+│   │   │   ├── trigger_filemonitor_test.go
+│   │   │   ├── task_file_monitor.go
+│   │   │   └── task_file_monitor_test.go
+│   │   └── data_sources/            # Data source implementations
+│   │       ├── agents.go
+│   │       ├── agents_test.go
+│   │       ├── agent_clusters.go
+│   │       ├── agent_clusters_test.go
+│   │       ├── tasks.go
+│   │       ├── tasks_test.go
+│   │       ├── task_instances.go
+│   │       └── task_instances_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
 │       ├── client.go                # API client
 │       └── client_test.go           # Client unit tests
-├── examples/                        # Example configurations
+├── examples/
+│   ├── resources/                   # Resource example configurations
+│   └── data-sources/                # Data source example configurations
 ├── CLAUDE.md                        # AI assistant context
 ├── README.md                        # User documentation
 ├── ROADMAP.md                       # Development roadmap
