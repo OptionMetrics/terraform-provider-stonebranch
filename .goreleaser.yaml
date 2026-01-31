@@ -49,36 +49,11 @@ changelog:
       - Merge pull request
       - Merge branch
 
-# Disable GitHub/GitLab releases (we publish to Artifactory instead)
+# Publish to GitHub Releases
 release:
-  disable: true
-
-# Upload to JFrog Artifactory
-uploads:
-  - name: artifactory
-    target: https://optionmetrics.jfrog.io/artifactory/terraform-providers/stonebranch/stonebranch/{{ .Version }}/
-    method: PUT
-    mode: archive
-    # Authentication via JFROG_USER and JFROG_PASSWORD env vars
-    # Or ARTIFACTORY_TOKEN env var
-
-# Optionally create GitHub releases (set disable: false and configure)
-# release:
-#   github:
-#     owner: your-org
-#     name: terraform-provider-stonebranch
-#   draft: true
-#   prerelease: auto
-
-# Signs the checksum file (optional, uncomment to enable)
-# signs:
-#   - artifacts: checksum
-#     cmd: gpg
-#     args:
-#       - "--batch"
-#       - "--local-user"
-#       - "{{ .Env.GPG_FINGERPRINT }}"
-#       - "--output"
-#       - "${signature}"
-#       - "--detach-sign"
-#       - "${artifact}"
+  github:
+    owner: OptionMetrics
+    name: terraform-provider-stonebranch
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
