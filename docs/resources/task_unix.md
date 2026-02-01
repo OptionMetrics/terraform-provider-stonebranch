@@ -104,7 +104,7 @@ resource "stonebranch_script" "backup" {
 - `credentials` (String) Name of the credentials to use for task execution.
 - `credentials_var` (String) Variable containing the credentials name.
 - `exit_code_processing` (String) How to process exit codes. Values: 'Success Exitcode Range', 'Failure Exitcode Range'.
-- `exit_codes` (String) Exit codes that indicate success (e.g., '0' or '0,1,2').
+- `exit_codes` (String) Exit codes that indicate success (e.g., '0' or '0,1,2'). Defaults to '0'.
 - `opswise_groups` (List of String) List of business service names this task belongs to.
 - `output_return_file` (String) File to capture output from.
 - `output_return_nline` (String) Number of lines to capture.
