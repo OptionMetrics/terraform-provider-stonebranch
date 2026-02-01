@@ -33,6 +33,7 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_trigger_task_monitor` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_task_monitor` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_task_stored_procedure` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_web_service` | ✅ Complete | ✅ | ✅ |
 
 ### Implemented Data Sources
 
@@ -61,7 +62,7 @@ These are the most commonly used task types that form the foundation of most aut
 | `stonebranch_task_stored_procedure` | Stored procedure execution | P1 | ✅ Complete |
 | `stonebranch_task_file_transfer` | File transfer (FTP/SFTP) | P0 | ✅ Complete |
 | `stonebranch_task_email` | Email notifications | P1 | ✅ Complete |
-| `stonebranch_task_web_service` | REST/SOAP web service calls | P1 | 🔲 Not Started |
+| `stonebranch_task_web_service` | REST/SOAP web service calls | P1 | ✅ Complete |
 
 ### Supporting Resources
 
@@ -78,7 +79,7 @@ These are the most commonly used task types that form the foundation of most aut
 - [x] `stonebranch_task_sql` resource with full CRUD
 - [x] `stonebranch_task_stored_procedure` resource with full CRUD
 - [x] `stonebranch_task_email` resource with full CRUD
-- [ ] `stonebranch_task_web_service` resource with full CRUD
+- [x] `stonebranch_task_web_service` resource with full CRUD
 - [x] `stonebranch_variable` resource with full CRUD
 - [x] `stonebranch_database_connection` resource with full CRUD
 - [x] `stonebranch_email_connection` resource with full CRUD

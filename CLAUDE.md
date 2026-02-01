@@ -521,6 +521,36 @@ Implemented `stonebranch_task_stored_procedure` resource in `internal/provider/r
    - The API doesn't return `param_var` in responses, so it's preserved from state
    - Used with `stonebranch_database_connection` for database connectivity
 
+### Step 2t: Web Service Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_web_service` resource in `internal/provider/resources/task_web_service.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskWebService")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Protocol: `protocol`, `http_method`, `http_version`, `soap_version`
+   - URL: `url` (required), `url_parameters` (nested list)
+   - Authentication: `http_auth`, `credentials`, `credentials_var`
+   - Request: `http_payload_type`, `soap_payload_type`, `mime_type` (required), `payload_source`, `payload`, `payload_script`, `form_data`, `soap_action`
+   - Headers: `http_headers` (nested list)
+   - Response: `soap_response_output`, `response_processing_type`, `status_code_range`, `output_type`, `output_path_expression`, `output_condition_operator`, `output_condition_value`, `output_condition_strategy`
+   - Options: `timeout`, `auto_cleanup`, `insecure`, `exit_codes`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+4. **Notes**:
+   - `mime_type` is required by the API
+   - Supports REST and SOAP protocols
+   - Headers, URL parameters, and form data are nested lists with `name` and `value` attributes
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -546,6 +576,7 @@ Each task type should be a separate resource:
 - `stonebranch_trigger_task_monitor` - Task monitor triggers (COMPLETE)
 - `stonebranch_task_monitor` - Task monitor tasks (COMPLETE)
 - `stonebranch_task_stored_procedure` - Stored procedure tasks (COMPLETE)
+- `stonebranch_task_web_service` - Web service tasks (COMPLETE)
 
 ### Step 5: Data Sources (COMPLETE)
 
@@ -827,6 +858,8 @@ terraform -chdir=examples/provider plan
 | Trigger data source tests | `internal/provider/data_sources/trigger_test.go` |
 | Task Stored Procedure resource | `internal/provider/resources/task_stored_procedure.go` |
 | Task Stored Procedure tests | `internal/provider/resources/task_stored_procedure_test.go` |
+| Task Web Service resource | `internal/provider/resources/task_web_service.go` |
+| Task Web Service tests | `internal/provider/resources/task_web_service_test.go` |
 | API spec | `openapi.yaml` |
 | Resource examples | `examples/resources/*/resource.tf` |
 | Data source examples | `examples/data-sources/*/data-source.tf` |
