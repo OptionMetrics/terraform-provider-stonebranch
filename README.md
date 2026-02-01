@@ -45,6 +45,52 @@ mv terraform-provider-stonebranch_v${VERSION} ~/.terraform.d/plugins/registry.te
 rm terraform-provider-stonebranch_${VERSION}_linux_amd64.zip
 ```
 
+### Configure Terraform to Use Local Provider
+
+After installing the provider binary, create or edit `~/.terraformrc` to tell Terraform to use the local filesystem mirror:
+
+```hcl
+provider_installation {
+  filesystem_mirror {
+    path    = "/Users/YOUR_USERNAME/.terraform.d/plugins"
+    include = ["stonebranch/stonebranch"]
+  }
+  direct {
+    exclude = ["stonebranch/stonebranch"]
+  }
+}
+```
+
+Replace `YOUR_USERNAME` with your actual username, or use the full path from `echo $HOME`.
+
+**For Linux**, use:
+```hcl
+provider_installation {
+  filesystem_mirror {
+    path    = "/home/YOUR_USERNAME/.terraform.d/plugins"
+    include = ["stonebranch/stonebranch"]
+  }
+  direct {
+    exclude = ["stonebranch/stonebranch"]
+  }
+}
+```
+
+Then in your Terraform configuration, reference the provider:
+
+```hcl
+terraform {
+  required_providers {
+    stonebranch = {
+      source  = "stonebranch/stonebranch"
+      version = "0.4.0"
+    }
+  }
+}
+```
+
+Run `terraform init` to verify the provider is found.
+
 ## Building from Source
 
 Requires [Go](https://golang.org/doc/install) >= 1.24.

@@ -216,8 +216,9 @@ func (r *TaskWindowsResource) Schema(ctx context.Context, req resource.SchemaReq
 
 			// Exit code handling
 			"exit_codes": schema.StringAttribute{
-				MarkdownDescription: "Exit codes that indicate success (e.g., '0' or '0,1,2').",
+				MarkdownDescription: "Exit codes that indicate success (e.g., '0' or '0,1,2'). Defaults to '0'.",
 				Optional:            true,
+				Computed:            true,
 			},
 			"exit_code_processing": schema.StringAttribute{
 				MarkdownDescription: "How to process exit codes. Values: 'Success Exitcode Range', 'Failure Exitcode Range'.",
@@ -505,7 +506,7 @@ func (r *TaskWindowsResource) toAPIModel(ctx context.Context, data *TaskWindowsR
 		Credentials:    data.Credentials.ValueString(),
 		CredentialsVar: data.CredentialsVar.ValueString(),
 
-		ExitCodes:          data.ExitCodes.ValueString(),
+		ExitCodes:          StringValueOrDefault(data.ExitCodes, "0"),
 		ExitCodeProcessing: data.ExitCodeProcessing.ValueString(),
 
 		OutputType:        data.OutputType.ValueString(),

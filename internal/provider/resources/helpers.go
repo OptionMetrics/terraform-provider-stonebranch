@@ -11,3 +11,11 @@ func StringValueOrNull(s string) types.String {
 	}
 	return types.StringValue(s)
 }
+
+// StringValueOrDefault returns the string value or a default if null/unknown/empty.
+func StringValueOrDefault(s types.String, defaultValue string) string {
+	if s.IsNull() || s.IsUnknown() || s.ValueString() == "" {
+		return defaultValue
+	}
+	return s.ValueString()
+}
