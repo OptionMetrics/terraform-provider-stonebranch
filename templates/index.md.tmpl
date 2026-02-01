@@ -1,0 +1,86 @@
+---
+page_title: "Provider: Stonebranch"
+description: |-
+  The Stonebranch provider enables Terraform to manage resources in StoneBranch Universal Controller.
+---
+
+# Stonebranch Provider
+
+The Stonebranch provider allows you to manage [StoneBranch Universal Controller](https://www.stonebranch.com/products/universal-controller/) resources using Terraform. Universal Controller is an enterprise workload automation platform that enables scheduling, orchestration, and monitoring of jobs across your infrastructure.
+
+## Features
+
+This provider supports managing:
+
+**Tasks:**
+- Unix/Linux command tasks
+- Windows command tasks
+- SQL database tasks
+- Email notification tasks
+- File transfer tasks
+- File monitor tasks
+- Workflow orchestration tasks
+
+**Triggers:**
+- Time-based triggers
+- Cron expression triggers
+- File monitor triggers
+
+**Supporting Resources:**
+- Scripts (reusable command scripts)
+- Credentials (authentication)
+- Variables (global/scoped)
+- Database connections
+- Email connections
+- Business services (resource grouping)
+- Calendars (business day definitions)
+
+**Workflows:**
+- Workflow tasks (DAG definitions)
+- Workflow vertices (task nodes)
+- Workflow edges (task dependencies)
+
+**Data Sources:**
+- Agents (query registered agents)
+- Agent clusters (query agent groups)
+- Tasks (search existing tasks)
+- Task instances (query job execution history)
+
+## Authentication
+
+The provider authenticates to the Universal Controller API using a Bearer token.
+
+### Obtaining an API Token
+
+1. Log in to your Universal Controller web interface
+2. Navigate to **Administration > Security > API Tokens**
+3. Create a new token with appropriate permissions
+4. Copy the token value
+
+### Configuration
+
+You can provide the API token in two ways:
+
+**Environment Variable (Recommended):**
+
+```shell
+export STONEBRANCH_API_TOKEN="your-api-token"
+export STONEBRANCH_BASE_URL="https://your-controller.stonebranch.cloud"  # Optional
+```
+
+**Provider Configuration:**
+
+```terraform
+provider "stonebranch" {
+  api_token = var.stonebranch_token  # Use a variable, never hardcode
+  base_url  = "https://your-controller.stonebranch.cloud"
+}
+```
+
+-> **Note:** We recommend using environment variables for sensitive values like API tokens.
+
+## Example Usage
+
+{{ tffile "examples/provider/main.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}

@@ -461,8 +461,33 @@ make test             # Run tests
 make testacc          # Run acceptance tests (requires API credentials)
 make fmt              # Format Go code
 make clean            # Remove built binary
+make docs             # Generate provider documentation
 make release-snapshot # Build release artifacts (no tag required)
-make publish          # Build and publish to Artifactory
+make publish          # Build and publish to GitHub Releases
+```
+
+### Generating Documentation
+
+Documentation is auto-generated from provider schemas using [tfplugindocs](https://github.com/hashicorp/terraform-plugin-docs).
+
+```bash
+# Generate/update documentation
+make docs
+```
+
+The generated docs are written to `docs/` and include:
+- Provider overview (`docs/index.md`)
+- Resource documentation (`docs/resources/*.md`)
+- Data source documentation (`docs/data-sources/*.md`)
+
+Examples are pulled from `examples/resources/*/resource.tf` and `examples/data-sources/*/data-source.tf`.
+
+**Always regenerate docs after schema changes:**
+```bash
+# After modifying resource schemas
+make docs
+git add docs/
+git commit -m "Update generated documentation"
 ```
 
 ### Releasing

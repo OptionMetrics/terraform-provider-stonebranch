@@ -521,7 +521,34 @@ Implemented `stonebranch_task_instances` data source in `internal/provider/data_
 - Acceptance tests for resources (`internal/provider/resources/*_test.go`)
 - Shared test helpers (`internal/acctest/acctest.go`)
 - .env file support for credentials (auto-loaded in tests via godotenv)
-- Generated documentation (to be done)
+- Generated documentation via tfplugindocs (COMPLETE)
+
+### Step 7: Documentation Generation (COMPLETE)
+
+Documentation is auto-generated using [tfplugindocs](https://github.com/hashicorp/terraform-plugin-docs):
+
+1. **Setup files**
+   - `tools/tools.go` - Go tools file tracking tfplugindocs dependency
+   - `templates/index.md.tmpl` - Custom provider index template
+   - `Makefile` - Added `make docs` target
+
+2. **Generated output** (`docs/` directory)
+   - `docs/index.md` - Provider overview
+   - `docs/resources/*.md` - Resource documentation (19 files)
+   - `docs/data-sources/*.md` - Data source documentation (4 files)
+
+3. **Example files** (used by tfplugindocs)
+   - `examples/resources/*/resource.tf` - Resource examples
+   - `examples/data-sources/*/data-source.tf` - Data source examples
+
+4. **Usage**
+   ```bash
+   # Generate/update documentation
+   make docs
+
+   # Always regenerate before releases
+   make docs && git add docs/ && git commit -m "Update docs"
+   ```
 
 ## API Patterns (from openapi.yaml)
 
@@ -589,6 +616,9 @@ make testacc-unix
 # Generate test coverage report
 make testcov
 
+# Generate provider documentation
+make docs
+
 # Test locally with Terraform
 export STONEBRANCH_API_TOKEN="your-token"  # Or use .env file
 export TF_CLI_CONFIG_FILE=./examples/dev.tfrc
@@ -651,7 +681,11 @@ terraform -chdir=examples/provider plan
 | Task Instances data source | `internal/provider/data_sources/task_instances.go` |
 | Task Instances data source tests | `internal/provider/data_sources/task_instances_test.go` |
 | API spec | `openapi.yaml` |
-| Resource examples | `examples/resources/` |
+| Resource examples | `examples/resources/*/resource.tf` |
+| Data source examples | `examples/data-sources/*/data-source.tf` |
+| Documentation tools | `tools/tools.go` |
+| Doc templates | `templates/index.md.tmpl` |
+| Generated docs | `docs/` |
 | Data source examples | `examples/data-sources/` |
 | Environment template | `.env.example` |
 

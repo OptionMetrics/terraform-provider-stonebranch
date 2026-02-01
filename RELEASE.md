@@ -50,7 +50,17 @@ make version
 
 ## Complete Release Workflow
 
-### Step 1: Ensure Clean Git State
+### Step 1: Regenerate Documentation
+
+Ensure documentation is up-to-date with any schema changes:
+
+```bash
+make docs
+git add docs/
+git diff --cached --quiet || git commit -m "Update generated documentation"
+```
+
+### Step 2: Ensure Clean Git State
 
 **Important:** GoReleaser requires a clean git state. All changes must be committed before creating a tag.
 
@@ -60,7 +70,7 @@ git add .
 git commit -m "Your commit message"
 ```
 
-### Step 2: Create Version Tag
+### Step 3: Create Version Tag
 
 Only create the tag after ALL changes are committed:
 
@@ -68,7 +78,7 @@ Only create the tag after ALL changes are committed:
 make tag V=0.4.0
 ```
 
-### Step 3: Push to GitHub
+### Step 4: Push to GitHub
 
 Push commits and tag:
 
@@ -77,7 +87,7 @@ git push origin main
 git push origin v0.4.0
 ```
 
-### Step 4: Publish Release
+### Step 5: Publish Release
 
 ```bash
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
@@ -90,7 +100,7 @@ This will:
 3. Generate SHA256 checksums
 4. Create a GitHub Release with all artifacts attached
 
-### Step 5: Verify
+### Step 6: Verify
 
 Check the release at:
 https://github.com/OptionMetrics/terraform-provider-stonebranch/releases
@@ -99,6 +109,7 @@ https://github.com/OptionMetrics/terraform-provider-stonebranch/releases
 
 ```bash
 # Full release workflow
+make docs                           # Regenerate documentation
 git status                          # Ensure clean state
 git add . && git commit -m "msg"    # Commit changes (if needed)
 make tag V=0.4.0                    # Create version tag
@@ -113,6 +124,7 @@ make publish                        # Build and publish
 | Command | Description |
 |---------|-------------|
 | `make version` | Show current version from git tag |
+| `make docs` | Generate provider documentation |
 | `make release-snapshot` | Build without tag (for testing) |
 | `make release` | Build release artifacts (no publish) |
 | `make publish` | Build and publish to GitHub Releases |

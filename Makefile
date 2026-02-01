@@ -1,4 +1,4 @@
-.PHONY: build install test testunit testacc testcov clean fmt lint dev release release-snapshot publish tag version
+.PHONY: build install test testunit testacc testcov clean fmt lint dev release release-snapshot publish tag version docs
 
 BINARY_NAME=terraform-provider-stonebranch
 INSTALL_PATH=~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.1.0/darwin_arm64
@@ -74,3 +74,7 @@ tag:
 # Show current version
 version:
 	@echo $(VERSION)
+
+# Generate provider documentation
+docs:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name stonebranch

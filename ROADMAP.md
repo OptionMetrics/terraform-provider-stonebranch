@@ -10,25 +10,25 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 
 | Resource | Status | Tests | Docs |
 |----------|--------|-------|------|
-| `stonebranch_task_unix` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_windows` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_script` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_trigger_time` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_file_transfer` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_credential` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_variable` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_database_connection` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_sql` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_workflow` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_workflow_vertex` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_workflow_edge` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_email_connection` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_email` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_trigger_cron` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_business_service` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_trigger_file_monitor` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_task_file_monitor` | ✅ Complete | ✅ | ❌ |
-| `stonebranch_calendar` | ✅ Complete | ✅ | ❌ |
+| `stonebranch_task_unix` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_windows` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_script` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_trigger_time` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_file_transfer` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_credential` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_variable` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_database_connection` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_sql` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_workflow` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_workflow_vertex` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_workflow_edge` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_email_connection` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_email` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_trigger_cron` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_business_service` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_trigger_file_monitor` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_file_monitor` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_calendar` | ✅ Complete | ✅ | ✅ |
 
 ### Implemented Data Sources
 
@@ -446,9 +446,16 @@ Each resource should have:
 
 ### Generated Documentation
 
-- [ ] Set up `tfplugindocs` generation
-- [ ] Schema descriptions for all attributes
-- [ ] Example files in `examples/` directory
+- [x] Set up `tfplugindocs` generation
+- [x] Schema descriptions for all attributes
+- [x] Example files in `examples/` directory
+
+**Usage:**
+```bash
+make docs  # Generate/update documentation
+```
+
+Generated docs are in `docs/` directory.
 
 ### Documentation Location
 
