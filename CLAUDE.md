@@ -416,6 +416,111 @@ Implemented `stonebranch_calendar` resource in `internal/provider/resources/cale
    - Business days use capitalized full names: "Monday", "Tuesday", etc.
    - Calendars are referenced by triggers via the `calendar` attribute
 
+### Step 2q: Agent Cluster Resource (COMPLETE)
+
+Implemented `stonebranch_agent_cluster` resource in `internal/provider/resources/agent_cluster.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/agentcluster` (type mapped from display name to API type)
+   - Read via `GET /resources/agentcluster?agentclustername=X`
+   - Update via `PUT /resources/agentcluster`
+   - Delete via `DELETE /resources/agentcluster?agentclusterid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `description`, `type` (required: "Linux/Unix", "Windows", or "z/OS")
+   - Distribution: `distribution` (Round Robin, Random, etc.)
+   - Limits: `limit_type`, `limit_amount`, `agent_limit_amount`
+   - Membership: `agents` (list of agent names)
+   - Business services: `opswise_groups`
+
+3. **Import support** via agent cluster name
+
+4. **Notes**:
+   - Type mapping: User-friendly names ("Linux/Unix", "Windows", "z/OS") are mapped to API types ("unixAgentCluster", "windowsAgentCluster", "ibmiAgentCluster")
+   - Limit defaults are set by the server, not by the provider
+
+### Step 2r: Task Monitor Trigger Resource (COMPLETE)
+
+Implemented `stonebranch_trigger_task_monitor` resource in `internal/provider/resources/trigger_taskmonitor.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/trigger` (type = "triggerTm")
+   - Read via `GET /resources/trigger?triggername=X`
+   - Update via `PUT /resources/trigger`
+   - Delete via `DELETE /resources/trigger?triggerid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `description`, `enabled` (computed, defaults to false)
+   - Tasks: `tasks` (required, list of task names to trigger)
+   - Task monitor: `task_monitor` (required, name of a Task Monitor task)
+   - Time restrictions: `time_zone`, `calendar`, `restricted_times`, `enabled_start`, `enabled_end`
+   - Business services: `opswise_groups`
+
+3. **Import support** via trigger name
+
+4. **Notes**:
+   - The `task_monitor` field references a Task Monitor task (type=taskMonitor), not a regular task
+   - Triggers are created disabled by default and currently cannot be enabled via the API
+   - Task Monitor triggers work in conjunction with Task Monitor tasks to create event-driven workflows
+
+### Step 2s: Task Monitor Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_monitor` resource in `internal/provider/resources/task_monitor.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskMonitor")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Task monitor: `task_mon_name` (required, name of task to monitor), `status_text`, `mon_type`, `type_text`
+   - Time scope: `time_scope`, `relative_time_from`, `relative_time_to`
+   - Workflow condition: `wf_condition_type`, `wf_condition_value`
+   - Monitoring options: `monitor_late_start`, `monitor_late_finish`, `monitor_early_finish`, `use_exit_code`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+4. **Notes**:
+   - At least one of `status_text`, `monitor_late_start`, `monitor_late_finish`, or `monitor_early_finish` must be specified
+   - Task Monitor tasks are used as the source for Task Monitor Triggers
+   - The `task_mon_name` field specifies which task this monitor watches
+
+### Step 2s: Stored Procedure Task Resource (COMPLETE)
+
+Implemented `stonebranch_task_stored_procedure` resource in `internal/provider/resources/task_stored_procedure.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskStoredProc")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Stored procedure: `stored_proc_name` (required)
+   - Database connection: `database_connection`, `connection_var`
+   - Result processing: `max_rows`, `auto_cleanup`, `result_processing`, `column_name`, `result_op`, `result_value`, `parameter_position`
+   - Exit codes: `exit_codes`
+   - Parameters: `parameters` (nested list with `param_var` (required), `param_mode`, `param_type`, `input_value`, `output_value`, `is_null`, `variable_scope`, `position`)
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Business services: `opswise_groups`
+
+3. **Import support** via task name
+
+4. **Notes**:
+   - Parameter modes use capitalized names: "Input", "Output", "Input/Output"
+   - Each parameter requires a `param_var` (variable name)
+   - The API doesn't return `param_var` in responses, so it's preserved from state
+   - Used with `stonebranch_database_connection` for database connectivity
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -437,8 +542,10 @@ Each task type should be a separate resource:
 - `stonebranch_workflow_vertex` - Tasks within workflows (COMPLETE)
 - `stonebranch_workflow_edge` - Dependencies between workflow tasks (COMPLETE)
 - `stonebranch_business_service` - Business services (COMPLETE)
-- Additional triggers/schedules
-- Agent clusters
+- `stonebranch_agent_cluster` - Agent clusters (COMPLETE)
+- `stonebranch_trigger_task_monitor` - Task monitor triggers (COMPLETE)
+- `stonebranch_task_monitor` - Task monitor tasks (COMPLETE)
+- `stonebranch_task_stored_procedure` - Stored procedure tasks (COMPLETE)
 
 ### Step 5: Data Sources (COMPLETE)
 
@@ -514,6 +621,34 @@ Implemented `stonebranch_task_instances` data source in `internal/provider/data_
    - `trigger_time`, `start_time`, `end_time`, `exit_code`
    - `agent`, `task_name`, `task_id`, `instance_number`
    - `triggered_by`, `workflow_instance_name`, `workflow_definition_name`
+
+#### 5e: Task Data Source (Single Lookup)
+
+Implemented `stonebranch_task` data source in `internal/provider/data_sources/task.go`:
+
+1. **Read operation** via `GET /resources/task?taskname=X`
+
+2. **Input attributes**
+   - `name` - **Required** - Name of the task to look up
+
+3. **Output attributes** (common fields across all task types)
+   - `sys_id`, `name`, `type`, `version`
+   - `summary`, `agent`, `agent_cluster`, `credentials`
+   - `opswise_groups`
+
+#### 5f: Trigger Data Source (Single Lookup)
+
+Implemented `stonebranch_trigger` data source in `internal/provider/data_sources/trigger.go`:
+
+1. **Read operation** via `GET /resources/trigger?triggername=X`
+
+2. **Input attributes**
+   - `name` - **Required** - Name of the trigger to look up
+
+3. **Output attributes** (common fields across all trigger types)
+   - `sys_id`, `name`, `type`, `version`
+   - `description`, `enabled`, `tasks`
+   - `time_zone`, `calendar`, `opswise_groups`
 
 ### Step 6: Testing & Documentation (COMPLETE)
 
@@ -671,6 +806,12 @@ terraform -chdir=examples/provider plan
 | File Monitor Task tests | `internal/provider/resources/task_file_monitor_test.go` |
 | Calendar resource | `internal/provider/resources/calendar.go` |
 | Calendar tests | `internal/provider/resources/calendar_test.go` |
+| Agent Cluster resource | `internal/provider/resources/agent_cluster.go` |
+| Agent Cluster tests | `internal/provider/resources/agent_cluster_test.go` |
+| Task Monitor Trigger resource | `internal/provider/resources/trigger_taskmonitor.go` |
+| Task Monitor Trigger tests | `internal/provider/resources/trigger_taskmonitor_test.go` |
+| Task Monitor resource | `internal/provider/resources/task_monitor.go` |
+| Task Monitor tests | `internal/provider/resources/task_monitor_test.go` |
 | Test helpers | `internal/acctest/acctest.go` |
 | Agents data source | `internal/provider/data_sources/agents.go` |
 | Agents data source tests | `internal/provider/data_sources/agents_test.go` |
@@ -680,6 +821,12 @@ terraform -chdir=examples/provider plan
 | Tasks data source tests | `internal/provider/data_sources/tasks_test.go` |
 | Task Instances data source | `internal/provider/data_sources/task_instances.go` |
 | Task Instances data source tests | `internal/provider/data_sources/task_instances_test.go` |
+| Task data source | `internal/provider/data_sources/task.go` |
+| Task data source tests | `internal/provider/data_sources/task_test.go` |
+| Trigger data source | `internal/provider/data_sources/trigger.go` |
+| Trigger data source tests | `internal/provider/data_sources/trigger_test.go` |
+| Task Stored Procedure resource | `internal/provider/resources/task_stored_procedure.go` |
+| Task Stored Procedure tests | `internal/provider/resources/task_stored_procedure_test.go` |
 | API spec | `openapi.yaml` |
 | Resource examples | `examples/resources/*/resource.tf` |
 | Data source examples | `examples/data-sources/*/data-source.tf` |

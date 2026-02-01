@@ -139,6 +139,10 @@ func (p *StonebranchProvider) Resources(ctx context.Context) []func() resource.R
 		resources.NewTriggerFileMonitorResource,
 		resources.NewTaskFileMonitorResource,
 		resources.NewCalendarResource,
+		resources.NewAgentClusterResource,
+		resources.NewTriggerTaskMonitorResource,
+		resources.NewTaskMonitorResource,
+		resources.NewTaskStoredProcedureResource,
 	}
 }
 
@@ -148,5 +152,7 @@ func (p *StonebranchProvider) DataSources(ctx context.Context) []func() datasour
 		data_sources.NewAgentClustersDataSource,
 		data_sources.NewTasksDataSource,
 		data_sources.NewTaskInstancesDataSource,
+		data_sources.NewTaskDataSource,
+		data_sources.NewTriggerDataSource,
 	}
 }

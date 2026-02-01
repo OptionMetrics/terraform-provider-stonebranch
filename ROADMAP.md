@@ -29,6 +29,10 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_trigger_file_monitor` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_task_file_monitor` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_calendar` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_agent_cluster` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_trigger_task_monitor` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_monitor` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task_stored_procedure` | ✅ Complete | ✅ | ✅ |
 
 ### Implemented Data Sources
 
@@ -38,6 +42,8 @@ This document outlines the development roadmap for the Stonebranch Universal Con
 | `stonebranch_agent_clusters` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_tasks` | ✅ Complete | ✅ | ✅ |
 | `stonebranch_task_instances` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_task` | ✅ Complete | ✅ | ✅ |
+| `stonebranch_trigger` | ✅ Complete | ✅ | ✅ |
 
 ---
 
@@ -52,7 +58,7 @@ These are the most commonly used task types that form the foundation of most aut
 | `stonebranch_task_unix` | Unix/Linux command execution | P0 | ✅ Complete |
 | `stonebranch_task_windows` | Windows command execution | P0 | ✅ Complete |
 | `stonebranch_task_sql` | SQL query execution | P0 | ✅ Complete |
-| `stonebranch_task_stored_procedure` | Stored procedure execution | P1 | 🔲 Not Started |
+| `stonebranch_task_stored_procedure` | Stored procedure execution | P1 | ✅ Complete |
 | `stonebranch_task_file_transfer` | File transfer (FTP/SFTP) | P0 | ✅ Complete |
 | `stonebranch_task_email` | Email notifications | P1 | ✅ Complete |
 | `stonebranch_task_web_service` | REST/SOAP web service calls | P1 | 🔲 Not Started |
@@ -70,7 +76,7 @@ These are the most commonly used task types that form the foundation of most aut
 ### Deliverables
 - [x] `stonebranch_task_windows` resource with full CRUD
 - [x] `stonebranch_task_sql` resource with full CRUD
-- [ ] `stonebranch_task_stored_procedure` resource with full CRUD
+- [x] `stonebranch_task_stored_procedure` resource with full CRUD
 - [x] `stonebranch_task_email` resource with full CRUD
 - [ ] `stonebranch_task_web_service` resource with full CRUD
 - [x] `stonebranch_variable` resource with full CRUD
@@ -100,7 +106,7 @@ Resources for building complex workflows and orchestration patterns.
 | `stonebranch_trigger_time` | Time-based scheduling | P0 | ✅ Complete |
 | `stonebranch_trigger_cron` | CRON expression triggers | P0 | ✅ Complete |
 | `stonebranch_trigger_file_monitor` | File arrival triggers | P0 | ✅ Complete |
-| `stonebranch_trigger_task_monitor` | Task completion triggers | P1 | 🔲 Not Started |
+| `stonebranch_trigger_task_monitor` | Task completion triggers | P1 | ✅ Complete |
 | `stonebranch_trigger_manual` | Manual/on-demand triggers | P1 | 🔲 Not Started |
 | `stonebranch_trigger_temporary` | One-time triggers | P2 | 🔲 Not Started |
 | `stonebranch_trigger_composite` | Compound triggers | P2 | 🔲 Not Started |
@@ -152,7 +158,7 @@ Resources for managing execution infrastructure.
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
-| `stonebranch_agent_cluster` | Agent cluster definitions | P0 | 🔲 Not Started |
+| `stonebranch_agent_cluster` | Agent cluster definitions | P0 | ✅ Complete |
 | `stonebranch_agent_cluster_membership` | Cluster member management | P1 | 🔲 Not Started |
 
 ### Data Sources (Read-Only)
@@ -163,7 +169,7 @@ Resources for managing execution infrastructure.
 | `stonebranch_agent_clusters` | List/filter agent clusters | P1 | ✅ Complete |
 
 ### Deliverables
-- [ ] `stonebranch_agent_cluster` resource with full CRUD
+- [x] `stonebranch_agent_cluster` resource with full CRUD
 - [x] Agent data sources for lookups
 - [x] Acceptance tests for data sources
 
@@ -245,7 +251,7 @@ Resources for enterprise system integrations.
 
 | Resource | Description | Priority | Status |
 |----------|-------------|----------|--------|
-| `stonebranch_task_monitor` | File/resource monitoring | P1 | 🔲 Not Started |
+| `stonebranch_task_monitor` | Task status monitoring | P1 | ✅ Complete |
 | `stonebranch_trigger_application_monitor` | Application triggers | P2 | 🔲 Not Started |
 
 ### Other Task Types
@@ -305,8 +311,8 @@ Read-only data sources for querying existing resources.
 | `stonebranch_agent_clusters` | List/filter agent clusters | P1 | ✅ Complete |
 | `stonebranch_tasks` | List/filter tasks | P0 | ✅ Complete |
 | `stonebranch_task_instances` | Query task instances | P1 | ✅ Complete |
-| `stonebranch_task` | Look up any task by name | P1 | 🔲 Not Started |
-| `stonebranch_trigger` | Look up trigger by name | P1 | 🔲 Not Started |
+| `stonebranch_task` | Look up any task by name | P1 | ✅ Complete |
+| `stonebranch_trigger` | Look up trigger by name | P1 | ✅ Complete |
 | `stonebranch_triggers` | List/filter triggers | P2 | 🔲 Not Started |
 | `stonebranch_credential` | Look up credential | P2 | 🔲 Not Started |
 | `stonebranch_script` | Look up script | P2 | 🔲 Not Started |
@@ -406,6 +412,11 @@ Test helpers: `internal/acctest/acctest.go`
 | `stonebranch_task_email` | ✅ Acceptance tests |
 | `stonebranch_trigger_cron` | ✅ Acceptance tests |
 | `stonebranch_business_service` | ✅ Acceptance tests |
+| `stonebranch_agent_cluster` | ✅ Acceptance tests |
+| `stonebranch_trigger_task_monitor` | ✅ Acceptance tests |
+| `stonebranch_task_monitor` | ✅ Acceptance tests |
+| `stonebranch_task` (data source) | ✅ Acceptance tests |
+| `stonebranch_trigger` (data source) | ✅ Acceptance tests |
 | `stonebranch_trigger_file_monitor` | ✅ Acceptance tests |
 | `stonebranch_task_file_monitor` | ✅ Acceptance tests |
 | `stonebranch_agents` (data source) | ✅ Acceptance tests |
@@ -483,12 +494,12 @@ docs/
 
 | Category | Count | Implemented |
 |----------|-------|-------------|
-| Task Types | 20 | 8 |
-| Trigger Types | 12 | 3 |
+| Task Types | 20 | 9 |
+| Trigger Types | 12 | 4 |
 | Connection Types | 5 | 2 |
-| Supporting Resources | 15 | 8 |
-| Data Sources | 13 | 4 |
-| **Total** | **65** | **25** |
+| Supporting Resources | 15 | 9 |
+| Data Sources | 13 | 6 |
+| **Total** | **65** | **30** |
 
 ### Priority Breakdown
 
