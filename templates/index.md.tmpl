@@ -79,6 +79,45 @@ provider "stonebranch" {
 
 -> **Note:** We recommend using environment variables for sensitive values like API tokens.
 
+## Usage Tips
+
+### Referencing Credentials
+
+Many task resources require credentials for authentication. Credentials are referenced by **name** as a string, not as a Terraform resource reference. You can either reference an existing credential or create one with the `stonebranch_credential` resource:
+
+```terraform
+# Create a credential
+resource "stonebranch_credential" "sftp_cred" {
+  name             = "my-sftp-credential"
+  runtime_user     = "sftpuser"
+  runtime_password = var.sftp_password  # sensitive
+}
+
+# Reference it by name in a task
+resource "stonebranch_task_file_transfer" "download" {
+  name               = "download-files"
+  remote_credentials = stonebranch_credential.sftp_cred.name
+  # ...
+}
+```
+
+Alternatively, use a `credentials_var` attribute to reference a StoneBranch variable containing the credential name at runtime.
+
+### Using StoneBranch Variables in Strings
+
+StoneBranch uses `${variable_name}` syntax for runtime variable substitution. Since Terraform uses the same syntax for interpolation, you must **escape the dollar sign** by doubling it:
+
+```terraform
+resource "stonebranch_task_file_transfer" "example" {
+  name = "edi-download"
+  # Use $$ to produce a literal $ in the output
+  remote_filename = "/data/$${wf_date}_$${sequence}.txt"
+  # Results in: /data/${wf_date}_${sequence}.txt
+}
+```
+
+Without escaping, Terraform will try to resolve `${wf_date}` as a Terraform variable reference and fail.
+
 ## Example Usage
 
 {{ tffile "examples/provider/main.tf" }}
