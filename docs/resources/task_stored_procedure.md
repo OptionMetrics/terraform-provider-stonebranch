@@ -136,6 +136,7 @@ resource "stonebranch_task_stored_procedure" "with_result_processing" {
 - `retry_maximum` (Number) Maximum number of retries.
 - `retry_suppress_failure` (Boolean) Whether to suppress failure on retry exhaustion.
 - `summary` (String) Summary/description of the task.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
@@ -159,3 +160,16 @@ Optional:
 - `param_type` (String) Parameter data type. Valid values: 'VARCHAR', 'INTEGER', 'DECIMAL', 'DATE', 'TIMESTAMP', etc.
 - `position` (Number) Position of the parameter in the stored procedure call.
 - `variable_scope` (String) Scope of the variable. Valid values: 'Self', 'Parent', 'Top Level'.
+
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

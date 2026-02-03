@@ -139,8 +139,21 @@ resource "stonebranch_task_sql" "critical_report" {
 - `retry_suppress_failure` (Boolean) Whether to suppress failure after all retries are exhausted.
 - `sql_command` (String) The SQL command to execute.
 - `summary` (String) Summary/description of the task.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

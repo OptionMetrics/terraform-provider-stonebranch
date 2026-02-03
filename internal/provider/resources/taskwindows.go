@@ -82,6 +82,9 @@ type TaskWindowsResourceModel struct {
 	DesktopInteract types.Bool `tfsdk:"desktop_interact"`
 	CreateConsole   types.Bool `tfsdk:"create_console"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -127,6 +130,8 @@ type TaskWindowsAPIModel struct {
 	ElevateUser     bool `json:"elevateUser,omitempty"`
 	DesktopInteract bool `json:"desktopInteract,omitempty"`
 	CreateConsole   bool `json:"createConsole,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -296,6 +301,9 @@ func (r *TaskWindowsResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -527,6 +535,9 @@ func (r *TaskWindowsResource) toAPIModel(ctx context.Context, data *TaskWindowsR
 		CreateConsole:   data.CreateConsole.ValueBool(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -577,6 +588,9 @@ func (r *TaskWindowsResource) fromAPIModel(ctx context.Context, apiModel *TaskWi
 	data.ElevateUser = types.BoolValue(apiModel.ElevateUser)
 	data.DesktopInteract = types.BoolValue(apiModel.DesktopInteract)
 	data.CreateConsole = types.BoolValue(apiModel.CreateConsole)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

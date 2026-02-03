@@ -143,6 +143,7 @@ output "watched_task" {
 - `time_scope` (String) Time scope for monitoring. Examples: 'Any Time', 'Relative Time'.
 - `type_text` (String) Task type filter for monitoring.
 - `use_exit_code` (Boolean) Use exit code for status determination.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 - `wf_condition_type` (String) Workflow condition type.
 - `wf_condition_value` (String) Workflow condition value.
 
@@ -150,3 +151,15 @@ output "watched_task" {
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

@@ -60,6 +60,9 @@ type TriggerCronResourceModel struct {
 	// Calendar
 	Calendar types.String `tfsdk:"calendar"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -86,6 +89,8 @@ type TriggerCronAPIModel struct {
 
 	TimeZone string `json:"timeZone,omitempty"`
 	Calendar string `json:"calendar,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -174,6 +179,9 @@ func (r *TriggerCronResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -387,6 +395,9 @@ func (r *TriggerCronResource) toAPIModel(ctx context.Context, data *TriggerCronR
 		model.Tasks = tasks
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -427,6 +438,9 @@ func (r *TriggerCronResource) fromAPIModel(ctx context.Context, apiModel *Trigge
 		tasks, _ := types.ListValueFrom(ctx, types.StringType, apiModel.Tasks)
 		data.Tasks = tasks
 	}
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

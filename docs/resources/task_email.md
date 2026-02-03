@@ -153,8 +153,21 @@ resource "stonebranch_task_email" "with_reply_to" {
 - `template` (String) Name of the email template to use.
 - `template_var` (String) Variable containing the email template name.
 - `to_recipients` (String) Comma-separated list of To recipients.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

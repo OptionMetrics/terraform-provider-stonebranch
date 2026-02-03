@@ -80,6 +80,9 @@ type TaskUnixResourceModel struct {
 	// Unix-specific
 	RunAsSudo types.Bool `tfsdk:"run_as_sudo"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -122,6 +125,8 @@ type TaskAPIModel struct {
 	RetrySuppressFailure bool  `json:"retrySuppressFailure,omitempty"`
 
 	RunAsSudo bool `json:"runAsSudo,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -281,6 +286,9 @@ func (r *TaskUnixResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -509,6 +517,9 @@ func (r *TaskUnixResource) toAPIModel(ctx context.Context, data *TaskUnixResourc
 		RunAsSudo: data.RunAsSudo.ValueBool(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -556,6 +567,9 @@ func (r *TaskUnixResource) fromAPIModel(ctx context.Context, apiModel *TaskAPIMo
 	data.RetrySuppressFailure = types.BoolValue(apiModel.RetrySuppressFailure)
 
 	data.RunAsSudo = types.BoolValue(apiModel.RunAsSudo)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

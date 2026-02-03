@@ -71,6 +71,9 @@ type TaskStoredProcedureResourceModel struct {
 	RetryInterval        types.Int64 `tfsdk:"retry_interval"`
 	RetrySuppressFailure types.Bool  `tfsdk:"retry_suppress_failure"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -117,6 +120,8 @@ type TaskStoredProcedureAPIModel struct {
 	RetryIndefinitely    bool  `json:"retryIndefinitely,omitempty"`
 	RetryInterval        int64 `json:"retryInterval,omitempty"`
 	RetrySuppressFailure bool  `json:"retrySuppressFailure,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -294,6 +299,9 @@ func (r *TaskStoredProcedureResource) Schema(ctx context.Context, req resource.S
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -506,6 +514,9 @@ func (r *TaskStoredProcedureResource) toAPIModel(ctx context.Context, data *Task
 		RetrySuppressFailure: data.RetrySuppressFailure.ValueBool(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle parameters
 	if !data.Parameters.IsNull() && !data.Parameters.IsUnknown() {
 		var params []StoredProcParamModel
@@ -641,6 +652,9 @@ func (r *TaskStoredProcedureResource) fromAPIModel(ctx context.Context, apiModel
 	data.RetryIndefinitely = types.BoolValue(apiModel.RetryIndefinitely)
 	data.RetryInterval = types.Int64Value(apiModel.RetryInterval)
 	data.RetrySuppressFailure = types.BoolValue(apiModel.RetrySuppressFailure)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

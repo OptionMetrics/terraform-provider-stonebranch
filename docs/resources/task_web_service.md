@@ -178,6 +178,7 @@ variable "api_token" {
 - `summary` (String) Summary/description of the task.
 - `timeout` (Number) Request timeout in seconds.
 - `url_parameters` (Attributes List) URL query parameters. (see [below for nested schema](#nestedatt--url_parameters))
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
@@ -209,3 +210,16 @@ Required:
 
 - `name` (String) Name of the parameter/header.
 - `value` (String) Value of the parameter/header.
+
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

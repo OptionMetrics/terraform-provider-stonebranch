@@ -127,8 +127,21 @@ resource "stonebranch_trigger_file_monitor" "process_incoming" {
 - `trigger_on_create` (Boolean) Whether to trigger on file creation.
 - `trigger_on_exist` (Boolean) Whether to trigger when the file already exists.
 - `use_regex` (Boolean) Whether to use regular expression pattern matching for the file name.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

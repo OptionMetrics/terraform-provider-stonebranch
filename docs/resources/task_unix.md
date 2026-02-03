@@ -120,9 +120,22 @@ resource "stonebranch_script" "backup" {
 - `runtime_dir` (String) Working directory for the task execution.
 - `script` (String) Name of the Script resource to execute (when command_or_script is 'Script').
 - `summary` (String) Description/summary of the task.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 - `wait_for_output` (Boolean) Whether to wait for output before completing.
 
 ### Read-Only
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

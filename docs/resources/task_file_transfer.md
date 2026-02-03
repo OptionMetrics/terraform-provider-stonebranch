@@ -105,8 +105,21 @@ resource "stonebranch_credential" "sftp" {
 - `transfer_direction` (String) Direction of file transfer: 'GET' (remote to local) or 'PUT' (local to remote). Default is 'PUT'. Only applies to UDM agents.
 - `transfer_mode` (String) Transfer mode: 'ASCII' or 'Binary'.
 - `use_regex` (Boolean) Whether to use regex for filename matching.
+- `variables` (Attributes List) List of task variables. These variables are scoped to the task and can be referenced using `${variable_name}` syntax. (see [below for nested schema](#nestedatt--variables))
 
 ### Read-Only
 
 - `sys_id` (String) System ID of the task (assigned by StoneBranch).
 - `version` (Number) Version number of the task (for optimistic locking).
+
+<a id="nestedatt--variables"></a>
+### Nested Schema for `variables`
+
+Required:
+
+- `name` (String) Name of the variable.
+
+Optional:
+
+- `description` (String) Description of the variable.
+- `value` (String) Value of the variable.

@@ -75,6 +75,9 @@ type TaskFileTransferResourceModel struct {
 	Encrypt  types.String `tfsdk:"encrypt"`
 	Compress types.String `tfsdk:"compress"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -112,6 +115,8 @@ type TaskFileTransferAPIModel struct {
 	UseRegex bool   `json:"useRegex,omitempty"`
 	Encrypt  string `json:"encrypt,omitempty"`
 	Compress string `json:"compress,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -245,6 +250,9 @@ func (r *TaskFileTransferResource) Schema(ctx context.Context, req resource.Sche
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -468,6 +476,9 @@ func (r *TaskFileTransferResource) toAPIModel(ctx context.Context, data *TaskFil
 		Compress: data.Compress.ValueString(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -520,6 +531,9 @@ func (r *TaskFileTransferResource) fromAPIModel(ctx context.Context, apiModel *T
 	data.UseRegex = types.BoolValue(apiModel.UseRegex)
 	data.Encrypt = StringValueOrNull(apiModel.Encrypt)
 	data.Compress = StringValueOrNull(apiModel.Compress)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

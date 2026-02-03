@@ -95,6 +95,9 @@ type TaskWebServiceResourceModel struct {
 	RetryInterval        types.Int64 `tfsdk:"retry_interval"`
 	RetrySuppressFailure types.Bool  `tfsdk:"retry_suppress_failure"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -155,6 +158,8 @@ type TaskWebServiceAPIModel struct {
 	RetryIndefinitely    bool  `json:"retryIndefinitely,omitempty"`
 	RetryInterval        int64 `json:"retryInterval,omitempty"`
 	RetrySuppressFailure bool  `json:"retrySuppressFailure,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -389,6 +394,9 @@ func (r *TaskWebServiceResource) Schema(ctx context.Context, req resource.Schema
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -625,6 +633,9 @@ func (r *TaskWebServiceResource) toAPIModel(ctx context.Context, data *TaskWebSe
 		RetrySuppressFailure: data.RetrySuppressFailure.ValueBool(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle URL parameters
 	if !data.UrlParameters.IsNull() && !data.UrlParameters.IsUnknown() {
 		var params []NameValueModel
@@ -727,6 +738,9 @@ func (r *TaskWebServiceResource) fromAPIModel(ctx context.Context, apiModel *Tas
 	data.RetryIndefinitely = types.BoolValue(apiModel.RetryIndefinitely)
 	data.RetryInterval = types.Int64Value(apiModel.RetryInterval)
 	data.RetrySuppressFailure = types.BoolValue(apiModel.RetrySuppressFailure)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// URL parameters
 	if len(apiModel.UrlParameters) > 0 {

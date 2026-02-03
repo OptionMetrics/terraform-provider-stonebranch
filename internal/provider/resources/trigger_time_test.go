@@ -159,3 +159,65 @@ resource "stonebranch_trigger_time" "test" {
 }
 `, taskName, triggerName, time)
 }
+
+func TestAccTriggerTimeResource_withVariables(t *testing.T) {
+	taskName := acctest.RandomWithPrefix("tf-test-task")
+	triggerName := acctest.RandomWithPrefix("tf-test-trigger")
+	resourceName := "stonebranch_trigger_time.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with variables
+			{
+				Config: testAccTriggerTimeConfig_withVariables(taskName, triggerName, "initial_value"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", triggerName),
+					resource.TestCheckResourceAttr(resourceName, "variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.name", "trigger_var1"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.value", "initial_value"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.description", "Trigger variable 1"),
+					resource.TestCheckResourceAttr(resourceName, "variables.1.name", "trigger_var2"),
+					resource.TestCheckResourceAttr(resourceName, "variables.1.value", "value2"),
+				),
+			},
+			// Update variables
+			{
+				Config: testAccTriggerTimeConfig_withVariables(taskName, triggerName, "updated_value"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "variables.0.value", "updated_value"),
+				),
+			},
+		},
+	})
+}
+
+func testAccTriggerTimeConfig_withVariables(taskName, triggerName, varValue string) string {
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
+resource "stonebranch_task_unix" "test" {
+  name       = %[1]q
+  command    = "echo 'Triggered task'"
+  agent_var  = "agent_name"
+  exit_codes = "0"
+}
+
+resource "stonebranch_trigger_time" "test" {
+  name  = %[2]q
+  time  = "12:00"
+  tasks = [stonebranch_task_unix.test.name]
+
+  variables = [
+    {
+      name        = "trigger_var1"
+      value       = %[3]q
+      description = "Trigger variable 1"
+    },
+    {
+      name  = "trigger_var2"
+      value = "value2"
+    }
+  ]
+}
+`, taskName, triggerName, varValue)
+}

@@ -71,6 +71,9 @@ type TaskMonitorResourceModel struct {
 	RetryIndefinitely    types.Bool  `tfsdk:"retry_indefinitely"`
 	RetrySuppressFailure types.Bool  `tfsdk:"retry_suppress_failure"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -112,6 +115,8 @@ type TaskMonitorAPIModel struct {
 	RetryInterval        int64 `json:"retryInterval,omitempty"`
 	RetryIndefinitely    bool  `json:"retryIndefinitely,omitempty"`
 	RetrySuppressFailure bool  `json:"retrySuppressFailure,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -258,6 +263,9 @@ func (r *TaskMonitorResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -476,6 +484,9 @@ func (r *TaskMonitorResource) toAPIModel(ctx context.Context, data *TaskMonitorR
 		RetrySuppressFailure: data.RetrySuppressFailure.ValueBool(),
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -524,6 +535,9 @@ func (r *TaskMonitorResource) fromAPIModel(ctx context.Context, apiModel *TaskMo
 	data.RetryInterval = types.Int64Value(apiModel.RetryInterval)
 	data.RetryIndefinitely = types.BoolValue(apiModel.RetryIndefinitely)
 	data.RetrySuppressFailure = types.BoolValue(apiModel.RetrySuppressFailure)
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {

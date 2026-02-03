@@ -149,3 +149,58 @@ resource "stonebranch_task_unix" "test" {
 }
 `, name, summary)
 }
+
+func TestAccTaskUnixResource_withVariables(t *testing.T) {
+	rName := acctest.RandomWithPrefix("tf-test")
+	resourceName := "stonebranch_task_unix.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { sbacctest.PreCheck(t) },
+		ProtoV6ProviderFactories: sbacctest.ProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with variables
+			{
+				Config: testAccTaskUnixConfig_withVariables(rName, "initial_value"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.name", "test_var1"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.value", "initial_value"),
+					resource.TestCheckResourceAttr(resourceName, "variables.0.description", "Test variable 1"),
+					resource.TestCheckResourceAttr(resourceName, "variables.1.name", "test_var2"),
+					resource.TestCheckResourceAttr(resourceName, "variables.1.value", "value2"),
+				),
+			},
+			// Update variables
+			{
+				Config: testAccTaskUnixConfig_withVariables(rName, "updated_value"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "variables.0.value", "updated_value"),
+				),
+			},
+		},
+	})
+}
+
+func testAccTaskUnixConfig_withVariables(name, varValue string) string {
+	return sbacctest.ProviderConfig() + fmt.Sprintf(`
+resource "stonebranch_task_unix" "test" {
+  name       = %[1]q
+  command    = "echo $${test_var1}"
+  agent_var  = "agent_name"
+  exit_codes = "0"
+
+  variables = [
+    {
+      name        = "test_var1"
+      value       = %[2]q
+      description = "Test variable 1"
+    },
+    {
+      name  = "test_var2"
+      value = "value2"
+    }
+  ]
+}
+`, name, varValue)
+}

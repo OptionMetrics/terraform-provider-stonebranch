@@ -56,6 +56,9 @@ type TriggerFileMonitorResourceModel struct {
 	EnabledStart    types.String `tfsdk:"enabled_start"`
 	EnabledEnd      types.String `tfsdk:"enabled_end"`
 
+	// Variables
+	Variables types.List `tfsdk:"variables"`
+
 	// Business services
 	OpswiseGroups types.List `tfsdk:"opswise_groups"`
 }
@@ -81,6 +84,8 @@ type TriggerFileMonitorAPIModel struct {
 	RestrictedTimes bool   `json:"restrictedTimes,omitempty"`
 	EnabledStart    string `json:"enabledStart,omitempty"`
 	EnabledEnd      string `json:"enabledEnd,omitempty"`
+
+	Variables []TaskVariableAPIModel `json:"variables,omitempty"`
 
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
@@ -161,6 +166,9 @@ func (r *TriggerFileMonitorResource) Schema(ctx context.Context, req resource.Sc
 				Optional:            true,
 				Computed:            true,
 			},
+
+			// Variables
+			"variables": TaskVariablesSchema(),
 
 			// Business services
 			"opswise_groups": schema.ListAttribute{
@@ -372,6 +380,9 @@ func (r *TriggerFileMonitorResource) toAPIModel(ctx context.Context, data *Trigg
 		model.Tasks = tasks
 	}
 
+	// Handle variables
+	model.Variables = TaskVariablesToAPI(ctx, data.Variables)
+
 	// Handle opswise_groups list
 	if !data.OpswiseGroups.IsNull() && !data.OpswiseGroups.IsUnknown() {
 		var groups []string
@@ -408,6 +419,9 @@ func (r *TriggerFileMonitorResource) fromAPIModel(ctx context.Context, apiModel 
 		tasks, _ := types.ListValueFrom(ctx, types.StringType, apiModel.Tasks)
 		data.Tasks = tasks
 	}
+
+	// Handle variables
+	data.Variables = TaskVariablesFromAPI(ctx, apiModel.Variables)
 
 	// Handle opswise_groups
 	if len(apiModel.OpswiseGroups) > 0 {
