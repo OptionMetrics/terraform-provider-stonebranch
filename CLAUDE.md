@@ -551,6 +551,44 @@ Implemented `stonebranch_task_web_service` resource in `internal/provider/resour
    - Supports REST and SOAP protocols
    - Headers, URL parameters, and form data are nested lists with `name` and `value` attributes
 
+### Step 2u: Universal Task - AWS S3 Resource (COMPLETE)
+
+Implemented `stonebranch_task_universal_aws_s3` resource in `internal/provider/resources/task_universal_aws_s3.go`:
+
+1. **Full CRUD operations**
+   - Create via `POST /resources/task` (type = "taskUniversal", template = "CS AWS S3")
+   - Read via `GET /resources/task?taskname=X`
+   - Update via `PUT /resources/task`
+   - Delete via `DELETE /resources/task?taskid=X`
+
+2. **Supported attributes**
+   - Identity: `sys_id` (computed), `name` (required), `version` (computed)
+   - Basic: `summary`
+   - Agent: `agent`, `agent_cluster`, `agent_var`, `agent_cluster_var`
+   - Credentials: `credentials`, `credentials_var`
+   - Exit codes: `exit_codes`, `exit_code_processing`
+   - Retry: `retry_maximum`, `retry_interval`, `retry_indefinitely`, `retry_suppress_failure`
+   - Variables: `variables` (nested list)
+   - Business services: `opswise_groups`
+   - **AWS S3 Template Fields:**
+     - Action: `action` (list-buckets, list-objects, upload-file, download-file, delete-objects, delete-bucket, create-bucket, copy-object-to-bucket, monitor-object)
+     - Bucket/Object: `bucket`, `target_bucket`, `s3_key`, `target_s3_key`, `prefix`, `source_prefix`, `target_prefix`
+     - Files: `sourcefile`, `target_directory`
+     - Operation: `operation` (copy, move)
+     - Write options: `download_write_options`, `upload_write_options`
+     - AWS credentials: `aws_access_key_id`, `aws_secret_access_key`, `aws_default_region`
+     - Role-based access: `role_based_access`, `service_name`, `role_arn`
+     - Proxy: `use_proxy`, `proxy_type`, `proxy`, `proxy_cred`, `port`
+     - Other: `show_details`, `log_level`, `endpoint_url`, `interval`, `acl`
+
+3. **Import support** via task name
+
+4. **Notes**:
+   - This is a Universal Task based on the "CS AWS S3" template
+   - Template-specific fields are mapped to the underlying Universal Task field slots (textField1-14, choiceField1-11, booleanField2, credentialField1,3,4)
+   - Each Universal Template type should have its own dedicated resource for full IDE autocomplete support
+   - Field names use user-friendly names (e.g., `bucket` instead of `object_store`, `s3_key` instead of `object`)
+
 ## Game Plan - Next Steps
 
 ### Step 3: Add Additional Task Types
@@ -860,6 +898,8 @@ terraform -chdir=examples/provider plan
 | Task Stored Procedure tests | `internal/provider/resources/task_stored_procedure_test.go` |
 | Task Web Service resource | `internal/provider/resources/task_web_service.go` |
 | Task Web Service tests | `internal/provider/resources/task_web_service_test.go` |
+| Universal AWS S3 resource | `internal/provider/resources/task_universal_aws_s3.go` |
+| Universal AWS S3 tests | `internal/provider/resources/task_universal_aws_s3_test.go` |
 | API spec | `openapi.yaml` |
 | Resource examples | `examples/resources/*/resource.tf` |
 | Data source examples | `examples/data-sources/*/data-source.tf` |
