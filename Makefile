@@ -1,6 +1,7 @@
-.PHONY: build install test testunit testacc testcov clean fmt lint dev release release-snapshot publish tag version docs
+.PHONY: build install test testunit testacc testcov clean fmt lint dev release release-snapshot publish tag version docs build-sb2tf install-sb2tf
 
 BINARY_NAME=terraform-provider-stonebranch
+SB2TF_BINARY=bin/sb2tf
 INSTALL_PATH=~/.terraform.d/plugins/registry.terraform.io/stonebranch/stonebranch/0.1.0/darwin_arm64
 
 # Version from git tag (strips leading 'v'), fallback to 0.0.0-dev
@@ -37,6 +38,8 @@ testcov:
 
 clean:
 	rm -f $(BINARY_NAME)
+	rm -f $(SB2TF_BINARY)
+	rm -rf bin/
 	rm -f coverage.out coverage.html
 	rm -rf dist/
 	go clean
@@ -78,3 +81,15 @@ version:
 # Generate provider documentation
 docs:
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name stonebranch
+
+# Build sb2tf CLI utility
+build-sb2tf:
+	mkdir -p bin
+	go build -ldflags "-X main.version=$(VERSION)" -o $(SB2TF_BINARY) ./cmd/sb2tf
+
+# Install sb2tf to $GOPATH/bin
+install-sb2tf:
+	go install -ldflags "-X main.version=$(VERSION)" ./cmd/sb2tf
+
+# Build all binaries
+build-all: build build-sb2tf

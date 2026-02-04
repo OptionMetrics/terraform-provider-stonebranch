@@ -105,6 +105,91 @@ This creates the `terraform-provider-stonebranch` binary in the project root.
 
 See [RELEASE.md](RELEASE.md) for the full release process.
 
+## sb2tf - Export Existing Resources to Terraform
+
+The `sb2tf` utility exports existing StoneBranch resources to Terraform configuration files. Use it to bootstrap a new Terraform project from existing resources or migrate manually-created resources to Infrastructure as Code.
+
+### Installation
+
+Download from [GitHub Releases](https://github.com/OptionMetrics/terraform-provider-stonebranch/releases) or build from source:
+
+```bash
+make build-sb2tf
+# Binary created at ./bin/sb2tf
+```
+
+### Authentication
+
+```bash
+export STONEBRANCH_API_TOKEN="your-token"
+export STONEBRANCH_BASE_URL="https://your-instance.stonebranch.cloud"
+```
+
+### Usage Examples
+
+```bash
+# List available resource types
+sb2tf list
+
+# List all tasks (shows name, type, summary)
+sb2tf list tasks
+
+# List tasks matching a pattern (supports * and ? wildcards)
+sb2tf list tasks --filter "prod-*"
+
+# Export a single resource
+sb2tf export task_unix my_task
+
+# Export a workflow with all its tasks, vertices, and edges
+sb2tf export task_workflow my_workflow
+
+# Export all tasks matching a pattern
+sb2tf export tasks --all --filter "prod-*"
+
+# Export to a directory (creates main.tf)
+sb2tf export tasks --all --output ./terraform/
+
+# Show what would be exported without writing files
+sb2tf export tasks --all --dry-run
+```
+
+### Workflow Export
+
+When exporting workflows, sb2tf automatically includes:
+- The workflow definition
+- All tasks contained in the workflow
+- Workflow vertices (task instances)
+- Workflow edges (task dependencies)
+
+The output is organized logically with proper Terraform references:
+
+```hcl
+# Workflow definition
+resource "stonebranch_task_workflow" "task_workflow_001" {
+  name = "My Workflow"
+  ...
+}
+
+# Tasks in the workflow
+resource "stonebranch_task_unix" "task_unix_001" {
+  name = "Task A"
+  ...
+}
+
+# Vertices
+resource "stonebranch_workflow_vertex" "workflow_vertex_001" {
+  workflow_name = "My Workflow"
+  task_name     = "Task A"
+}
+
+# Edges with proper vertex references
+resource "stonebranch_workflow_edge" "workflow_edge_001" {
+  workflow_name = "My Workflow"
+  source_id     = stonebranch_workflow_vertex.workflow_vertex_001.vertex_id
+  target_id     = stonebranch_workflow_vertex.workflow_vertex_002.vertex_id
+}
+```
+
 ## Local Development Setup
 
 ### 1. Configure Development Overrides
@@ -474,17 +559,22 @@ terraform import stonebranch_business_service.example "service-name"
 ```
 terraform-provider-stonebranch/
 ├── main.go                          # Provider entry point
+├── cmd/
+│   └── sb2tf/                       # sb2tf CLI utility
+│       ├── main.go                  # CLI entry point
+│       ├── cli/                     # Command implementations
+│       │   ├── root.go              # Root command, global flags
+│       │   ├── list.go              # List resources command
+│       │   └── export.go            # Export resources command
+│       └── generator/               # HCL generation
+│           ├── generator.go         # Core generation logic
+│           ├── resources.go         # Resource type registry
+│           └── templates.go         # HCL templates
 ├── internal/
 │   ├── provider/
 │   │   ├── provider.go              # Provider configuration and schema
-│   │   └── resources/               # Resource implementations
-│   │       ├── helpers.go           # Shared helper functions
-│   │       ├── task_unix.go         # Unix task resource
-│   │       ├── taskwindows.go       # Windows task resource
-│   │       ├── task_file_transfer.go # File transfer task
-│   │       ├── script.go            # Script resource
-│   │       ├── trigger_time.go      # Time trigger resource
-│   │       └── credential.go        # Credential resource
+│   │   ├── resources/               # Resource implementations
+│   │   └── data_sources/            # Data source implementations
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
@@ -493,21 +583,28 @@ terraform-provider-stonebranch/
 │   ├── dev.tfrc                     # Development override config
 │   └── provider/
 │       └── main.tf                  # Example Terraform configuration
+├── docs/                            # Generated documentation
 ├── Makefile                         # Build automation
 ├── CLAUDE.md                        # AI assistant context
-├── ROADMAP.md                       # Development roadmap
 └── openapi.yaml                     # StoneBranch API specification
 ```
 
 ### Useful Commands
 
 ```bash
+# Provider
 make build            # Build the provider binary
 make test             # Run tests
 make testacc          # Run acceptance tests (requires API credentials)
 make fmt              # Format Go code
-make clean            # Remove built binary
+make clean            # Remove built binaries
 make docs             # Generate provider documentation
+
+# sb2tf utility
+make build-sb2tf      # Build the sb2tf binary
+make install-sb2tf    # Install sb2tf to $GOPATH/bin
+
+# Releases
 make release-snapshot # Build release artifacts (no tag required)
 make publish          # Build and publish to GitHub Releases
 ```

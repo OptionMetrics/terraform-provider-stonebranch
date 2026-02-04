@@ -8,6 +8,7 @@ before:
     - go mod tidy
 
 builds:
+  # Terraform provider build
   - id: terraform-provider-stonebranch
     binary: terraform-provider-stonebranch_v{{ .Version }}
     env:
@@ -26,14 +27,45 @@ builds:
       - -s -w
       - -X main.version={{ .Version }}
 
+  # sb2tf CLI utility build
+  - id: sb2tf
+    main: ./cmd/sb2tf
+    binary: sb2tf
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+
 archives:
-  - id: zip
+  # Provider archive
+  - id: provider-zip
+    ids:
+      - terraform-provider-stonebranch
     formats:
       - zip
     name_template: "terraform-provider-stonebranch_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
+  # sb2tf archive (separate downloads)
+  - id: sb2tf-zip
+    ids:
+      - sb2tf
+    formats:
+      - zip
+    name_template: "sb2tf_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
 checksum:
-  name_template: "terraform-provider-stonebranch_{{ .Version }}_SHA256SUMS"
+  name_template: "checksums_{{ .Version }}_SHA256SUMS"
   algorithm: sha256
 
 snapshot:

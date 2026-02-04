@@ -23,3 +23,7 @@ coverage.out
 
 .env
 resources.test
+tmp/
+
+# Build output directory (contains sb2tf binary)
+bin/

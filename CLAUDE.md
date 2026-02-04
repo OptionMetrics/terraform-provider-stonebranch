@@ -801,8 +801,11 @@ TaskWsData (base)
 ## Build & Test Commands
 
 ```bash
-# Build
+# Build provider
 make build
+
+# Build sb2tf utility
+make build-sb2tf
 
 # Run unit tests (no API credentials needed)
 make test
@@ -827,6 +830,10 @@ make docs
 export STONEBRANCH_API_TOKEN="your-token"  # Or use .env file
 export TF_CLI_CONFIG_FILE=./examples/dev.tfrc
 terraform -chdir=examples/provider plan
+
+# Release builds (both provider and sb2tf)
+make release-snapshot  # Build without tag
+make publish           # Build and publish to GitHub
 ```
 
 ## File Locations
@@ -921,58 +928,22 @@ Avoid using platform-specific suffixes in Go file names:
 ```
 terraform-provider-stonebranch/
 ├── main.go                          # Provider entry point
+├── cmd/
+│   └── sb2tf/                       # sb2tf CLI utility
+│       ├── main.go                  # CLI entry point
+│       ├── cli/                     # Command implementations
+│       │   ├── root.go              # Root command, global flags
+│       │   ├── list.go              # List resources command
+│       │   └── export.go            # Export resources command
+│       └── generator/               # HCL generation
+│           ├── generator.go         # Core generation logic
+│           ├── resources.go         # Resource type registry
+│           └── templates.go         # HCL templates
 ├── internal/
 │   ├── provider/
 │   │   ├── provider.go              # Provider configuration
 │   │   ├── resources/               # Resource implementations
-│   │   │   ├── helpers.go           # Shared helper functions
-│   │   │   ├── task_unix.go
-│   │   │   ├── task_unix_test.go
-│   │   │   ├── taskwindows.go
-│   │   │   ├── taskwindows_test.go
-│   │   │   ├── task_file_transfer.go
-│   │   │   ├── task_file_transfer_test.go
-│   │   │   ├── script.go
-│   │   │   ├── script_test.go
-│   │   │   ├── trigger_time.go
-│   │   │   ├── trigger_time_test.go
-│   │   │   ├── trigger_cron.go
-│   │   │   ├── trigger_cron_test.go
-│   │   │   ├── credential.go
-│   │   │   ├── credential_test.go
-│   │   │   ├── variable.go
-│   │   │   ├── variable_test.go
-│   │   │   ├── database_connection.go
-│   │   │   ├── database_connection_test.go
-│   │   │   ├── email_connection.go
-│   │   │   ├── email_connection_test.go
-│   │   │   ├── task_sql.go
-│   │   │   ├── task_sql_test.go
-│   │   │   ├── task_email.go
-│   │   │   ├── task_email_test.go
-│   │   │   ├── task_workflow.go
-│   │   │   ├── task_workflow_test.go
-│   │   │   ├── workflow_vertex.go
-│   │   │   ├── workflow_vertex_test.go
-│   │   │   ├── workflow_edge.go
-│   │   │   ├── workflow_edge_test.go
-│   │   │   ├── business_service.go
-│   │   │   ├── business_service_test.go
-│   │   │   ├── trigger_filemonitor.go
-│   │   │   ├── trigger_filemonitor_test.go
-│   │   │   ├── task_file_monitor.go
-│   │   │   ├── task_file_monitor_test.go
-│   │   │   ├── calendar.go
-│   │   │   └── calendar_test.go
 │   │   └── data_sources/            # Data source implementations
-│   │       ├── agents.go
-│   │       ├── agents_test.go
-│   │       ├── agent_clusters.go
-│   │       ├── agent_clusters_test.go
-│   │       ├── tasks.go
-│   │       ├── tasks_test.go
-│   │       ├── task_instances.go
-│   │       └── task_instances_test.go
 │   ├── acctest/
 │   │   └── acctest.go               # Acceptance test helpers
 │   └── client/
@@ -981,8 +952,56 @@ terraform-provider-stonebranch/
 ├── examples/
 │   ├── resources/                   # Resource example configurations
 │   └── data-sources/                # Data source example configurations
+├── docs/                            # Generated documentation
 ├── CLAUDE.md                        # AI assistant context
 ├── README.md                        # User documentation
-├── ROADMAP.md                       # Development roadmap
 └── openapi.yaml                     # StoneBranch API spec
 ```
+
+## sb2tf CLI Utility
+
+The `sb2tf` utility exports existing StoneBranch resources to Terraform configuration files.
+
+### Build Commands
+
+```bash
+make build-sb2tf      # Build to ./bin/sb2tf
+make install-sb2tf    # Install to $GOPATH/bin
+```
+
+### Usage
+
+```bash
+# Authentication (same env vars as provider)
+export STONEBRANCH_API_TOKEN="your-token"
+export STONEBRANCH_BASE_URL="https://your-instance.stonebranch.cloud"
+
+# List resources
+sb2tf list                           # Show all resource types
+sb2tf list tasks                     # List all tasks
+sb2tf list tasks --filter "prod-*"   # Filter by name pattern (wildcards: * and ?)
+
+# Export resources
+sb2tf export task_unix my_task              # Export single resource
+sb2tf export task_workflow my_workflow      # Export workflow with tasks/vertices/edges
+sb2tf export tasks --all --filter "prod-*"  # Export matching tasks
+sb2tf export tasks --all --output ./tf/     # Export to directory (creates main.tf)
+```
+
+### File Locations
+
+| Purpose | Path |
+|---------|------|
+| CLI entry point | `cmd/sb2tf/main.go` |
+| Root command | `cmd/sb2tf/cli/root.go` |
+| List command | `cmd/sb2tf/cli/list.go` |
+| Export command | `cmd/sb2tf/cli/export.go` |
+| Generator | `cmd/sb2tf/generator/generator.go` |
+| Resource registry | `cmd/sb2tf/generator/resources.go` |
+| HCL templates | `cmd/sb2tf/generator/templates.go` |
+
+### Adding New Resource Types
+
+1. Add entry to `resourceTypes` map in `generator/resources.go`
+2. Add HCL template in `generator/templates.go`
+3. Register template in `init()` function
