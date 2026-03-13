@@ -1,6 +1,8 @@
 # Terraform Provider for StoneBranch
 
-A Terraform provider for managing resources in [StoneBranch Universal Controller](https://www.stonebranch.com/).
+A community-developed Terraform provider for managing resources in [StoneBranch Universal Controller](https://www.stonebranch.com/).
+
+> **Disclaimer:** This is an independent, community-driven project and is **not affiliated with, endorsed by, or sponsored by Stonebranch GmbH**. "Stonebranch", "Universal Controller", "Universal Automation Center", and related product names are trademarks or registered trademarks of Stonebranch GmbH. All trademarks are the property of their respective owners.
 
 ## Requirements
 
@@ -105,7 +107,9 @@ This creates the `terraform-provider-stonebranch` binary in the project root.
 
 See [RELEASE.md](RELEASE.md) for the full release process.
 
-## sb2tf - Export Existing Resources to Terraform
+## sb2tf - Export Existing Resources to Terraform (Experimental)
+
+> **Note:** `sb2tf` is an **experimental** utility shipped separately from the provider. It may have incomplete support for some resource types, and its output may require manual adjustments. Use at your own risk.
 
 The `sb2tf` utility exports existing StoneBranch resources to Terraform configuration files. Use it to bootstrap a new Terraform project from existing resources or migrate manually-created resources to Infrastructure as Code.
 
@@ -671,3 +675,7 @@ terraform plan
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Trademarks
+
+"Stonebranch", "Universal Controller", "Universal Automation Center", and related product names are trademarks or registered trademarks of Stonebranch GmbH. "Terraform" is a trademark of HashiCorp, Inc. This project is not endorsed by or affiliated with either company.
