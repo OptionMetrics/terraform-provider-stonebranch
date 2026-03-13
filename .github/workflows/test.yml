@@ -49,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build, unit-test]
+    timeout-minutes: 30
     env:
       TF_ACC: "1"
       STONEBRANCH_API_TOKEN: ${{ secrets.STONEBRANCH_API_TOKEN }}
@@ -62,5 +63,13 @@ jobs:
       - uses: hashicorp/setup-terraform@v4
         with:
           terraform_wrapper: false
-      - run: go test -v -count=1 -timeout 120m ./internal/provider/...
-        if: env.STONEBRANCH_API_TOKEN != ''
+      - name: Verify credentials
+        run: |
+          if [ -z "$STONEBRANCH_API_TOKEN" ] || [ -z "$STONEBRANCH_BASE_URL" ]; then
+            echo "Skipping acceptance tests: secrets not configured"
+            exit 0
+          fi
+          echo "Credentials configured, running tests..."
+      - name: Run acceptance tests
+        if: env.STONEBRANCH_API_TOKEN != '' && env.STONEBRANCH_BASE_URL != ''
+        run: go test -v -count=1 -timeout 20m ./internal/provider/...
