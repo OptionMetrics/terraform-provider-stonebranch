@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-	"terraform-provider-stonebranch/internal/provider"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/provider"
 )
 
 var (

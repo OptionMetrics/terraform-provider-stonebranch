@@ -4,7 +4,7 @@ package main
 import (
 	"os"
 
-	"terraform-provider-stonebranch/cmd/sb2tf/cli"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/cmd/sb2tf/cli"
 )
 
 // version is set via ldflags during build

@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/joho/godotenv"
 
-	"terraform-provider-stonebranch/internal/provider"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/provider"
 )
 
 func init() {

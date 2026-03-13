@@ -1,4 +1,4 @@
-module terraform-provider-stonebranch
+module github.com/OptionMetrics/terraform-provider-stonebranch
 
 go 1.24.0
 

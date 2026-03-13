@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 
-	sbacctest "terraform-provider-stonebranch/internal/acctest"
+	sbacctest "github.com/OptionMetrics/terraform-provider-stonebranch/internal/acctest"
 )
 
 func TestAccTaskEmailResource_basic(t *testing.T) {

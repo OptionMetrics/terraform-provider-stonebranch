@@ -12,7 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"terraform-provider-stonebranch/cmd/sb2tf/generator"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/cmd/sb2tf/generator"
 )
 
 var (

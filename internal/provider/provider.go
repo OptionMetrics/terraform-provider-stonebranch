@@ -12,9 +12,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
-	"terraform-provider-stonebranch/internal/client"
-	"terraform-provider-stonebranch/internal/provider/data_sources"
-	"terraform-provider-stonebranch/internal/provider/resources"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/client"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/provider/data_sources"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/provider/resources"
 )
 
 // Ensure StonebranchProvider satisfies various provider interfaces.

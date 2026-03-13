@@ -14,7 +14,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"terraform-provider-stonebranch/internal/client"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/client"
 )
 
 // Generator handles exporting StoneBranch resources to Terraform HCL.

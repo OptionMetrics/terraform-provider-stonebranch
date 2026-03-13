@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"terraform-provider-stonebranch/internal/client"
+	"github.com/OptionMetrics/terraform-provider-stonebranch/internal/client"
 )
 
 var (
