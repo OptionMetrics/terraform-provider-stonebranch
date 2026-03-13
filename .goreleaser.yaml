@@ -1,4 +1,5 @@
 # GoReleaser configuration for terraform-provider-stonebranch
+# Based on HashiCorp's recommended configuration for Terraform providers
 # Documentation: https://goreleaser.com
 
 version: 2
@@ -10,24 +11,35 @@ before:
 builds:
   # Terraform provider build
   - id: terraform-provider-stonebranch
-    binary: terraform-provider-stonebranch_v{{ .Version }}
+    binary: "{{ .ProjectName }}_v{{ .Version }}"
     env:
       - CGO_ENABLED=0
     goos:
       - darwin
+      - freebsd
       - linux
       - windows
     goarch:
       - amd64
+      - arm
       - arm64
+      - "386"
     ignore:
+      - goos: darwin
+        goarch: "386"
       - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: freebsd
         goarch: arm64
     ldflags:
       - -s -w
       - -X main.version={{ .Version }}
+    flags:
+      - -trimpath
 
-  # sb2tf CLI utility build
+  # sb2tf CLI utility build (experimental, separate from provider)
   - id: sb2tf
     main: ./cmd/sb2tf
     binary: sb2tf
@@ -54,7 +66,7 @@ archives:
       - terraform-provider-stonebranch
     formats:
       - zip
-    name_template: "terraform-provider-stonebranch_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
   # sb2tf archive (separate downloads)
   - id: sb2tf-zip
@@ -65,8 +77,22 @@ archives:
     name_template: "sb2tf_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
-  name_template: "checksums_{{ .Version }}_SHA256SUMS"
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
   algorithm: sha256
+  extra_files:
+    - glob: terraform-registry-manifest.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
 
 snapshot:
   version_template: "{{ incpatch .Version }}-dev"
@@ -86,6 +112,9 @@ release:
   github:
     owner: OptionMetrics
     name: terraform-provider-stonebranch
+  extra_files:
+    - glob: terraform-registry-manifest.json
+      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
   draft: false
   prerelease: auto
   name_template: "v{{ .Version }}"

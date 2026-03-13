@@ -20,6 +20,12 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
       - uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
@@ -27,4 +33,4 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
