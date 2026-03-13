@@ -670,10 +670,10 @@ func (g *Generator) generateHCLFromData(rt *ResourceType, data map[string]interf
 // generateWorkflowVertexHCL generates HCL for a workflow vertex.
 func (g *Generator) generateWorkflowVertexHCL(workflowName string, v WorkflowVertex) (string, error) {
 	data := map[string]interface{}{
-		"workflowName":      workflowName,
-		"taskName":          v.Task.Value,
-		"alias":             v.Alias,
-		"_resourceName":     SanitizeName(fmt.Sprintf("%s_%s", workflowName, v.Task.Value)),
+		"workflowName":       workflowName,
+		"taskName":           v.Task.Value,
+		"alias":              v.Alias,
+		"_resourceName":      SanitizeName(fmt.Sprintf("%s_%s", workflowName, v.Task.Value)),
 		"_terraformResource": "stonebranch_workflow_vertex",
 	}
 

@@ -43,17 +43,17 @@ type TaskMonitorResourceModel struct {
 	Summary types.String `tfsdk:"summary"`
 
 	// Task monitor specific
-	MonType             types.String `tfsdk:"mon_type"`
-	TaskMonName         types.String `tfsdk:"task_mon_name"`
-	TaskNameLookup      types.String `tfsdk:"task_name_lookup"`
-	TaskNameValue       types.String `tfsdk:"task_name_value"`
+	MonType              types.String `tfsdk:"mon_type"`
+	TaskMonName          types.String `tfsdk:"task_mon_name"`
+	TaskNameLookup       types.String `tfsdk:"task_name_lookup"`
+	TaskNameValue        types.String `tfsdk:"task_name_value"`
 	TaskNameValueResolve types.Bool   `tfsdk:"task_name_value_resolve"`
-	StatusText          types.String `tfsdk:"status_text"`
-	TypeText            types.String `tfsdk:"type_text"`
-	TimeScope           types.String `tfsdk:"time_scope"`
-	RelativeTimeFrom    types.String `tfsdk:"relative_time_from"`
-	RelativeTimeTo      types.String `tfsdk:"relative_time_to"`
-	ExpirationAction    types.String `tfsdk:"expiration_action"`
+	StatusText           types.String `tfsdk:"status_text"`
+	TypeText             types.String `tfsdk:"type_text"`
+	TimeScope            types.String `tfsdk:"time_scope"`
+	RelativeTimeFrom     types.String `tfsdk:"relative_time_from"`
+	RelativeTimeTo       types.String `tfsdk:"relative_time_to"`
+	ExpirationAction     types.String `tfsdk:"expiration_action"`
 
 	// Workflow condition
 	WfConditionType  types.String `tfsdk:"wf_condition_type"`
@@ -88,17 +88,17 @@ type TaskMonitorAPIModel struct {
 	Summary string `json:"summary,omitempty"`
 
 	// Task monitor specific
-	MonType             string `json:"monType,omitempty"`
-	TaskMonName         string `json:"taskMonName,omitempty"`
-	TaskNameLookup      string `json:"taskNameLookup,omitempty"`
-	TaskNameValue       string `json:"taskNameValue,omitempty"`
+	MonType              string `json:"monType,omitempty"`
+	TaskMonName          string `json:"taskMonName,omitempty"`
+	TaskNameLookup       string `json:"taskNameLookup,omitempty"`
+	TaskNameValue        string `json:"taskNameValue,omitempty"`
 	TaskNameValueResolve bool   `json:"taskNameValueResolve,omitempty"`
-	StatusText          string `json:"statusText,omitempty"`
-	TypeText            string `json:"typeText,omitempty"`
-	TimeScope           string `json:"timeScope,omitempty"`
-	RelativeTimeFrom    string `json:"relativeTimeFrom,omitempty"`
-	RelativeTimeTo      string `json:"relativeTimeTo,omitempty"`
-	ExpirationAction    string `json:"expirationAction,omitempty"`
+	StatusText           string `json:"statusText,omitempty"`
+	TypeText             string `json:"typeText,omitempty"`
+	TimeScope            string `json:"timeScope,omitempty"`
+	RelativeTimeFrom     string `json:"relativeTimeFrom,omitempty"`
+	RelativeTimeTo       string `json:"relativeTimeTo,omitempty"`
+	ExpirationAction     string `json:"expirationAction,omitempty"`
 
 	// Workflow condition
 	WfConditionType  string `json:"wfConditionType,omitempty"`

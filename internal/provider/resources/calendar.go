@@ -62,17 +62,17 @@ type CalendarResourceModel struct {
 
 // CalendarAPIModel represents the API request/response structure.
 type CalendarAPIModel struct {
-	SysId              string            `json:"sysId,omitempty"`
-	Name               string            `json:"name"`
-	Version            int64             `json:"version,omitempty"`
-	Comments           string            `json:"comments,omitempty"`
-	FirstDayOfWeek     string            `json:"firstDayOfWeek,omitempty"`
-	BusinessDays       *BusinessDaysAPI  `json:"businessDays,omitempty"`
-	FirstQuarterStart  *QuarterAPI       `json:"firstQuarterStart,omitempty"`
-	SecondQuarterStart *QuarterAPI       `json:"secondQuarterStart,omitempty"`
-	ThirdQuarterStart  *QuarterAPI       `json:"thirdQuarterStart,omitempty"`
-	FourthQuarterStart *QuarterAPI       `json:"fourthQuarterStart,omitempty"`
-	OpswiseGroups      []string          `json:"opswiseGroups,omitempty"`
+	SysId              string           `json:"sysId,omitempty"`
+	Name               string           `json:"name"`
+	Version            int64            `json:"version,omitempty"`
+	Comments           string           `json:"comments,omitempty"`
+	FirstDayOfWeek     string           `json:"firstDayOfWeek,omitempty"`
+	BusinessDays       *BusinessDaysAPI `json:"businessDays,omitempty"`
+	FirstQuarterStart  *QuarterAPI      `json:"firstQuarterStart,omitempty"`
+	SecondQuarterStart *QuarterAPI      `json:"secondQuarterStart,omitempty"`
+	ThirdQuarterStart  *QuarterAPI      `json:"thirdQuarterStart,omitempty"`
+	FourthQuarterStart *QuarterAPI      `json:"fourthQuarterStart,omitempty"`
+	OpswiseGroups      []string         `json:"opswiseGroups,omitempty"`
 }
 
 // BusinessDaysAPI represents the business days wrapper.

@@ -32,28 +32,28 @@ type TriggerDataSourceModel struct {
 	Name types.String `tfsdk:"name"`
 
 	// Output - common fields across all trigger types
-	SysId       types.String `tfsdk:"sys_id"`
-	Type        types.String `tfsdk:"type"`
-	Version     types.Int64  `tfsdk:"version"`
-	Description types.String `tfsdk:"description"`
-	Enabled     types.Bool   `tfsdk:"enabled"`
-	Tasks       types.List   `tfsdk:"tasks"`
-	TimeZone    types.String `tfsdk:"time_zone"`
-	Calendar    types.String `tfsdk:"calendar"`
-	OpswiseGroups types.List `tfsdk:"opswise_groups"`
+	SysId         types.String `tfsdk:"sys_id"`
+	Type          types.String `tfsdk:"type"`
+	Version       types.Int64  `tfsdk:"version"`
+	Description   types.String `tfsdk:"description"`
+	Enabled       types.Bool   `tfsdk:"enabled"`
+	Tasks         types.List   `tfsdk:"tasks"`
+	TimeZone      types.String `tfsdk:"time_zone"`
+	Calendar      types.String `tfsdk:"calendar"`
+	OpswiseGroups types.List   `tfsdk:"opswise_groups"`
 }
 
 // TriggerAPIModel represents the API response structure (common fields).
 type TriggerAPIModel struct {
-	SysId       string   `json:"sysId"`
-	Name        string   `json:"name"`
-	Type        string   `json:"type"`
-	Version     int64    `json:"version"`
-	Description string   `json:"description,omitempty"`
-	Enabled     bool     `json:"enabled,omitempty"`
-	Tasks       []string `json:"tasks,omitempty"`
-	TimeZone    string   `json:"timeZone,omitempty"`
-	Calendar    string   `json:"calendar,omitempty"`
+	SysId         string   `json:"sysId"`
+	Name          string   `json:"name"`
+	Type          string   `json:"type"`
+	Version       int64    `json:"version"`
+	Description   string   `json:"description,omitempty"`
+	Enabled       bool     `json:"enabled,omitempty"`
+	Tasks         []string `json:"tasks,omitempty"`
+	TimeZone      string   `json:"timeZone,omitempty"`
+	Calendar      string   `json:"calendar,omitempty"`
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
 

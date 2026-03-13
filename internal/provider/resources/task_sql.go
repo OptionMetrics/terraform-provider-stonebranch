@@ -45,7 +45,7 @@ type TaskSQLResourceModel struct {
 
 	// Database connection
 	DatabaseConnection types.String `tfsdk:"database_connection"`
-	ConnectionVar types.String `tfsdk:"connection_var"`
+	ConnectionVar      types.String `tfsdk:"connection_var"`
 
 	// SQL configuration
 	SQLCommand types.String `tfsdk:"sql_command"`

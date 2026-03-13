@@ -72,14 +72,14 @@ type TaskWebServiceResourceModel struct {
 	HttpHeaders types.List `tfsdk:"http_headers"`
 
 	// Response processing
-	SoapResponseOutput       types.String `tfsdk:"soap_response_output"`
-	ResponseProcessingType   types.String `tfsdk:"response_processing_type"`
-	StatusCodeRange          types.String `tfsdk:"status_code_range"`
-	OutputType               types.String `tfsdk:"output_type"`
-	OutputPathExpression     types.String `tfsdk:"output_path_expression"`
-	OutputConditionOperator  types.String `tfsdk:"output_condition_operator"`
-	OutputConditionValue     types.String `tfsdk:"output_condition_value"`
-	OutputConditionStrategy  types.String `tfsdk:"output_condition_strategy"`
+	SoapResponseOutput      types.String `tfsdk:"soap_response_output"`
+	ResponseProcessingType  types.String `tfsdk:"response_processing_type"`
+	StatusCodeRange         types.String `tfsdk:"status_code_range"`
+	OutputType              types.String `tfsdk:"output_type"`
+	OutputPathExpression    types.String `tfsdk:"output_path_expression"`
+	OutputConditionOperator types.String `tfsdk:"output_condition_operator"`
+	OutputConditionValue    types.String `tfsdk:"output_condition_value"`
+	OutputConditionStrategy types.String `tfsdk:"output_condition_strategy"`
 
 	// Timeout and options
 	Timeout     types.Int64 `tfsdk:"timeout"`

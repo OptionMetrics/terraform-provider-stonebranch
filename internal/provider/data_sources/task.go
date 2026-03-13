@@ -32,26 +32,26 @@ type TaskDataSourceModel struct {
 	Name types.String `tfsdk:"name"`
 
 	// Output - common fields across all task types
-	SysId       types.String `tfsdk:"sys_id"`
-	Type        types.String `tfsdk:"type"`
-	Version     types.Int64  `tfsdk:"version"`
-	Summary     types.String `tfsdk:"summary"`
-	Agent       types.String `tfsdk:"agent"`
-	AgentCluster types.String `tfsdk:"agent_cluster"`
-	Credentials types.String `tfsdk:"credentials"`
-	OpswiseGroups types.List `tfsdk:"opswise_groups"`
+	SysId         types.String `tfsdk:"sys_id"`
+	Type          types.String `tfsdk:"type"`
+	Version       types.Int64  `tfsdk:"version"`
+	Summary       types.String `tfsdk:"summary"`
+	Agent         types.String `tfsdk:"agent"`
+	AgentCluster  types.String `tfsdk:"agent_cluster"`
+	Credentials   types.String `tfsdk:"credentials"`
+	OpswiseGroups types.List   `tfsdk:"opswise_groups"`
 }
 
 // SingleTaskAPIModel represents the API response structure (common fields).
 type SingleTaskAPIModel struct {
-	SysId        string   `json:"sysId"`
-	Name         string   `json:"name"`
-	Type         string   `json:"type"`
-	Version      int64    `json:"version"`
-	Summary      string   `json:"summary,omitempty"`
-	Agent        string   `json:"agent,omitempty"`
-	AgentCluster string   `json:"agentCluster,omitempty"`
-	Credentials  string   `json:"credentials,omitempty"`
+	SysId         string   `json:"sysId"`
+	Name          string   `json:"name"`
+	Type          string   `json:"type"`
+	Version       int64    `json:"version"`
+	Summary       string   `json:"summary,omitempty"`
+	Agent         string   `json:"agent,omitempty"`
+	AgentCluster  string   `json:"agentCluster,omitempty"`
+	Credentials   string   `json:"credentials,omitempty"`
 	OpswiseGroups []string `json:"opswiseGroups,omitempty"`
 }
 

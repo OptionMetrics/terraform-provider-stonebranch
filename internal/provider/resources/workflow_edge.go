@@ -56,10 +56,10 @@ type EdgeVertexRef struct {
 
 // WorkflowEdgeResponseModel represents the API response structure.
 type WorkflowEdgeResponseModel struct {
-	SysId        string                `json:"sysId,omitempty"`
-	SourceId     *EdgeVertexRefResp    `json:"sourceId,omitempty"`
-	TargetId     *EdgeVertexRefResp    `json:"targetId,omitempty"`
-	StraightEdge bool                  `json:"straightEdge,omitempty"`
+	SysId        string             `json:"sysId,omitempty"`
+	SourceId     *EdgeVertexRefResp `json:"sourceId,omitempty"`
+	TargetId     *EdgeVertexRefResp `json:"targetId,omitempty"`
+	StraightEdge bool               `json:"straightEdge,omitempty"`
 }
 
 type EdgeVertexRefResp struct {
