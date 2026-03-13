@@ -604,7 +604,7 @@ docs/
 
 ## API Reference
 
-- **Base URL:** `https://optionmetricsdev.stonebranch.cloud`
+- **Base URL:** `https://your-instance.stonebranch.cloud`
 - **API Version:** 7.9.1.0
 - **Spec File:** `openapi.yaml`
 

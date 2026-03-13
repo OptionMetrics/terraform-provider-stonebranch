@@ -138,7 +138,7 @@ terraform {
 
 provider "stonebranch" {
   # api_token = var.stonebranch_token  # or set STONEBRANCH_API_TOKEN env var
-  # base_url  = "https://optionmetricsdev.stonebranch.cloud"  # optional, this is the default
+  # base_url  = "https://your-instance.stonebranch.cloud"  # or set STONEBRANCH_BASE_URL env var
 }
 
 # Example: Simple Unix task that runs a command
@@ -160,7 +160,7 @@ resource "stonebranch_task_unix" "hello_world" {
 variable "agent_name" {
   description = "Name of the StoneBranch agent to run tasks on"
   type        = string
-  default     = "DEV_UA_CLOUD_LINUX_UE1_02"
+  default     = "your-agent-name"
 }
 
 # Example: Script resource
@@ -254,4 +254,4 @@ resource "stonebranch_task_file_transfer" "download_report" {
 ### Optional
 
 - `api_token` (String, Sensitive) Bearer token for StoneBranch API authentication. Can also be set via STONEBRANCH_API_TOKEN environment variable.
-- `base_url` (String) Base URL for the StoneBranch API. Can also be set via STONEBRANCH_BASE_URL environment variable. Defaults to https://optionmetricsdev.stonebranch.cloud
+- `base_url` (String) Base URL for the StoneBranch API. Can also be set via STONEBRANCH_BASE_URL environment variable.

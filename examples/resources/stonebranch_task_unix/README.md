@@ -15,7 +15,7 @@ This example demonstrates how to create Unix/Linux tasks in Stonebranch Universa
 # Set your API token
 export STONEBRANCH_API_TOKEN="your-token"
 
-# Optionally set the base URL (defaults to https://optionmetricsdev.stonebranch.cloud)
+# Set the base URL for your StoneBranch instance
 export STONEBRANCH_BASE_URL="https://your-instance.stonebranch.cloud"
 
 # Initialize and apply

@@ -54,7 +54,7 @@ func (p *StonebranchProvider) Schema(ctx context.Context, req provider.SchemaReq
 				Sensitive:   true,
 			},
 			"base_url": schema.StringAttribute{
-				Description: "Base URL for the StoneBranch API. Can also be set via STONEBRANCH_BASE_URL environment variable. Defaults to https://optionmetricsdev.stonebranch.cloud",
+				Description: "Base URL for the StoneBranch API. Can also be set via STONEBRANCH_BASE_URL environment variable.",
 				Optional:    true,
 			},
 		},
@@ -74,10 +74,6 @@ func (p *StonebranchProvider) Configure(ctx context.Context, req provider.Config
 	apiToken := os.Getenv("STONEBRANCH_API_TOKEN")
 	baseURL := os.Getenv("STONEBRANCH_BASE_URL")
 
-	if baseURL == "" {
-		baseURL = "https://optionmetricsdev.stonebranch.cloud"
-	}
-
 	// Override with config values if provided
 	if !config.APIToken.IsNull() {
 		apiToken = config.APIToken.ValueString()
@@ -95,6 +91,16 @@ func (p *StonebranchProvider) Configure(ctx context.Context, req provider.Config
 			"The provider cannot create the StoneBranch API client as there is a missing or empty value for the StoneBranch API token. "+
 				"Set the api_token value in the configuration or use the STONEBRANCH_API_TOKEN environment variable. "+
 				"If either is already set, ensure the value is not empty.",
+		)
+	}
+
+	if baseURL == "" {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("base_url"),
+			"Missing StoneBranch Base URL",
+			"The provider cannot create the StoneBranch API client as there is a missing or empty value for the base URL. "+
+				"Set the base_url value in the configuration or use the STONEBRANCH_BASE_URL environment variable. "+
+				"Example: https://your-instance.stonebranch.cloud",
 		)
 	}
 

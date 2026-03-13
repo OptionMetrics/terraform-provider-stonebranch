@@ -253,9 +253,8 @@ provider "stonebranch" {
   # Can also use STONEBRANCH_API_TOKEN environment variable
   api_token = var.stonebranch_token
 
-  # Base URL for the StoneBranch API (optional)
+  # Base URL for the StoneBranch API (required)
   # Can also use STONEBRANCH_BASE_URL environment variable
-  # Defaults to: https://optionmetricsdev.stonebranch.cloud
   base_url = "https://your-instance.stonebranch.cloud"
 }
 ```
@@ -585,7 +584,6 @@ terraform-provider-stonebranch/
 │       └── main.tf                  # Example Terraform configuration
 ├── docs/                            # Generated documentation
 ├── Makefile                         # Build automation
-├── CLAUDE.md                        # AI assistant context
 └── openapi.yaml                     # StoneBranch API specification
 ```
 
@@ -672,4 +670,4 @@ terraform plan
 
 ## License
 
-[Add license information]
+This project is licensed under the [MIT License](LICENSE).

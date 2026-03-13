@@ -1,0 +1,50 @@
+name: Bug Report
+description: Report a bug with the StoneBranch Terraform provider
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the information below.
+  - type: input
+    id: terraform-version
+    attributes:
+      label: Terraform Version
+      placeholder: "1.9.0"
+    validations:
+      required: true
+  - type: input
+    id: provider-version
+    attributes:
+      label: Provider Version
+      placeholder: "0.4.0"
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Terraform Configuration
+      description: Relevant Terraform configuration (redact any sensitive values)
+      render: hcl
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include error messages if applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug Logs
+      description: "Run with `TF_LOG=DEBUG terraform plan` and paste relevant output"
+      render: text

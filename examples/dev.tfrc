@@ -8,8 +8,8 @@
 
 provider_installation {
   dev_overrides {
-    # Change this path to where your terraform-provider-stonebranch binary is located
-    "stonebranch/stonebranch" = "/Users/dhait/go/bin/terraform-provider-stonebranch"
+    # Change this path to your $GOPATH/bin or project root directory
+    "stonebranch/stonebranch" = "/path/to/your/go/bin"
   }
   direct {}
 }

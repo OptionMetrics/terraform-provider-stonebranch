@@ -85,7 +85,8 @@ func initClient(cmd *cobra.Command, args []string) error {
 		url = os.Getenv("STONEBRANCH_BASE_URL")
 	}
 	if url == "" {
-		url = "https://optionmetricsdev.stonebranch.cloud"
+		fmt.Fprintln(os.Stderr, "Error: STONEBRANCH_BASE_URL environment variable or --base-url flag is required")
+		os.Exit(1)
 	}
 
 	// Create client
